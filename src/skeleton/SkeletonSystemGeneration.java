@@ -71,7 +71,9 @@ public class SkeletonSystemGeneration {
 	private void generateTreeSystem(){
 		Point3D[] rootArray = new Point3D[rootSet.size()];
 		rootSet.toArray(rootArray);
+		
 		EdgeWeightedGraph G = new EdgeWeightedGraph(rootArray.length);
+		
 		for(int i = 0;i<rootArray.length;i++){
 			for(int j = 0;j<rootArray.length;j++){
 				if(rootArray[i].equals(rootArray[j])) continue;
@@ -79,12 +81,13 @@ public class SkeletonSystemGeneration {
 				
 			}
 		}
-		KruskalMST mst = new KruskalMST(G);
 		
+		
+		KruskalMST mst = new KruskalMST(G);
+		System.out.println("Minimum spanning tree");
 		for(Edge e: mst.edges()){
 			System.out.println(e);
 			addToBoneSystem(rootArray[e.v()], rootArray[e.w()]);
-			
 		}
 		
 	}
@@ -95,6 +98,10 @@ public class SkeletonSystemGeneration {
 			root.addChild(q);
 		}else{
 			Bone result = findBone(root, p, q);
+			if(result==null){//TODO
+				root.addChild(p);
+				result = findBone(root, p, q);
+			}
 			if(result.getInitPosition().equals(p)){
 				result.addChild(q);
 			}else{

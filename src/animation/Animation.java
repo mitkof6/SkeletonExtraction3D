@@ -69,17 +69,27 @@ public class Animation {
 			
 			for(int i = 0;i<bones.size();i++){
 				double dist = bones.get(i).getInitPosition().distance(v.getPoint());
-				weightedBones.put(1/dist, bones.get(i));
-				total += 1/dist;
+				weightedBones.put(dist, bones.get(i));
+				total += dist;
 			}
 			
-			List<Double> weights = new ArrayList<Double>(weightedBones.keySet());
-			Collections.sort(weights);
+			List<Double> distance = new ArrayList<Double>(weightedBones.keySet());
+			Collections.sort(distance);
 			
+			System.out.println("Node: "+v.getX()+" "+v.getY()+" "+v.getZ());
 			for(int i = 0;i<dependencies;i++){
-				Bone b = weightedBones.get(weights.get(i));
-				v.addBoneSkinBinding(new BoneSkinBinding(
-								getBindingMatrix(v, b), ((double) weights.get(i))/total, b));
+				System.out.println("Distance: "+distance.get(i));
+				Bone b = weightedBones.get(distance.get(i));
+				System.out.println("Bone: "+b.getInitPosition().getX()+" "+b.getInitPosition().getY()+" "+b.getInitPosition().getZ());
+				if(distance.get(i)==0){
+					v.addBoneSkinBinding(new BoneSkinBinding(
+							getBindingMatrix(v, b), 1, b));
+					break;
+				}else{
+					v.addBoneSkinBinding(new BoneSkinBinding(
+							getBindingMatrix(v, b), 1/dependencies, b));
+				}
+				
 			}
 		}
 	}
@@ -109,7 +119,9 @@ public class Animation {
 
 		//System.out.println(Arrays.deepToString(array));
 		//System.out.println(v.getPoint().toString()+" -> "+b.getAbsolutePosition().toString());
-		return new Matrix4(m);
+		Matrix4 matrix = new Matrix4(m);
+		System.out.println(matrix.toString());
+		return matrix;
 	}
 
 	public static Bone getInitialPose(){

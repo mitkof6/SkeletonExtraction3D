@@ -264,6 +264,7 @@ public class SkeletonExtraction {
 			synchronized (chains) {
 				chains.add(temp);
 			}
+			System.out.println("Node: "+v.getX()+" "+v.getY()+" "+v.getZ()+" Finished");
 		}
 	}
 }

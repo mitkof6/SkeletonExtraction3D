@@ -52,6 +52,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	//data
 	private Vector<Triangle> triangles;
 	private Bone root;
+	private Mesh mesh;
 	
 	//bone selection
 	private int currentBone = 1;
@@ -69,7 +70,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
     private int lastY = 0;
 
     //animation
-    private int keyFrameIndex = 0, FPS = 40, time;
+    private int keyFrameIndex = 0, FPS = 3, time;
     private boolean animationFlag = false;
     
     //weights
@@ -95,21 +96,27 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 		//get data
 		triangles = Main.triangles;
-		root = Main.root;
+		//root = Main.root;
 		
-		/*
+		
 		root = new Bone(new Point3D(0,0,0), null);
+		root.setBonesCount(7);
+		root.setName(1);
 		root.addChild(new Point3D(2.555,0,0));
+		root.getChild().get(0).setName(2);
 		root.addChild(new Point3D(0,5.5,0));
+		root.getChild().get(1).setName(3);
 		root.addChild(new Point3D(0,0,3.33));
+		root.getChild().get(2).setName(4);
 		//root.addChild(new Point3D(-10,0,0));
 		root.getChild().get(0).addChild(new Point3D(10,10,10));
+		root.getChild().get(0).getChild().get(0).setName(5);
 		root.getChild().get(1).addChild(new Point3D(-10,10,-10));
+		root.getChild().get(1).getChild().get(0).setName(6);
 		root.getChild().get(2).addChild(new Point3D(-10,-10,10));
-		root.getChild().get(2).getChild().get(0).addChild(new Point3D(-10,-10,-10));
-		//root.getChild().get(3).addChild(new Point3D(-10,-10,10));
-		root.getChild().get(0).getChild().get(0).addChild(new Point3D(10,-10,-10));
-		*/
+		root.getChild().get(2).getChild().get(0).setName(7);
+		
+		mesh = new Mesh(Main.vertices, root);
 		
 
 		//intialization
@@ -168,7 +175,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	public void display(GLAutoDrawable drawable) {
 		render(drawable);
 		if(weightInit==false){
-			//Animation.initSkinWeights(root);
+			Animation.initSkinWeights(mesh, Main.SKIN_DEPENDENCIES);
 			weightInit = true;
 		}
 		if(animationFlag){
@@ -210,7 +217,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	
 
 		//draw bone system
-		drawBone(root, gl);
+		drawBone(mesh.getRoot(), gl);
 
 		gl.glColor3d(1, 0, 0);
 		drawSkin(gl);
@@ -293,6 +300,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	private void drawBone(Bone bone, GL2 gl){
 		
 		gl.glPushMatrix();
+		
 		/*
 		if(bone.getParent()!=null){
 			gl.glBegin(GL2.GL_LINE_LOOP);
@@ -306,6 +314,12 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		}
 		*/
 		double[] m = new double[16];
+		
+		if(bone.getParent()==null){
+			gl.glTranslated(bone.getInitPosition().getX(),
+				bone.getInitPosition().getY(),
+				bone.getInitPosition().getZ());
+		}
 		
 		Vector3D rotXYZ = bone.getRotXYZ();
 		gl.glRotated(Math.toDegrees(bone.getAngle()), rotXYZ.getX(), rotXYZ.getY(), rotXYZ.getZ());	
@@ -323,9 +337,10 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		
 		gl.glTranslated(bone.getLength(), 0, 0);	
 		
-		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, m, 0);
+		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, m, 0);//GL_MODELVIEW_MATRIX
 		bone.setAbsoluteMatrix(new Matrix4(m));
-		
+		//System.out.println(bone.getAbsoluteMatrix().toString());
+		//System.out.println(m[12]+" "+m[13]+" "+m[14]);
 		for(Bone child : bone.getChild()){
 			drawBone(child, gl);
 		}

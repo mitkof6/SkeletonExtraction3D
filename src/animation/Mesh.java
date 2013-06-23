@@ -10,7 +10,7 @@ import math.geom3d.Point3D;
 
 public class Mesh {
 
-	private Vector<Node<Triangle>> vertices;
+	private Vector<Node<Triangle>> vertices = new Vector<>();
 	private Bone root;
 	private Point3D[] skin;
 	

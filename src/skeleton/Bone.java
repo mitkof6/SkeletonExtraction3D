@@ -17,7 +17,8 @@ public class Bone {
 	private Matrix4 
 			relativeTranslation = Matrix4.identity(),
 			relativeRotation = Matrix4.identity(),
-			absolute = Matrix4.identity();
+			absolute = Matrix4.identity(),
+			relative = Matrix4.identity();
 			//absoluteRotation = Matrix4.identity();
 	private double length;
 	private double angle;
@@ -41,7 +42,7 @@ public class Bone {
 			length = 0;
 		}
 		
-		//System.out.println(relative.toString());
+		
 		
 	}
 	
@@ -170,6 +171,7 @@ public class Bone {
 		
 		relative = new Matrix4(m);
 		
+		
 		double rcos = Math.cos(phi);
 		double rsin = Math.sin(phi);
 		
@@ -198,9 +200,13 @@ public class Bone {
 		relative = new Matrix4(m);
 		*/
 		
+		
+		
 	}
 	
-	
+	public Matrix4 getRelativeMatrix(){
+		return this.relative;
+	}
 	public double getAngle() {
 		return angle;
 	}
