@@ -6,6 +6,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ import com.jogamp.opengl.util.FPSAnimator;
 
 
 public class Animator extends Frame implements GLEventListener, KeyListener, 
-	MouseListener, MouseMotionListener{
+	MouseListener, MouseMotionListener, MouseWheelListener{
 
 	/**
 	 * 
@@ -50,21 +52,13 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 	//data
 	private Mesh mesh;
+	private Vector<Triangle> faces;
 	
 	//bone selection
 	private int currentBone = 1;
 
 	//angle update
 	private double angleOffset = 0.1;
-	
-	//movements
-	private float zoom = 15f;
-    private float rotX = 45.f;
-    private float rotY = 0.001f;
-    private float tX = 0.f;
-    private float tY = 0.f;
-    private int lastX = 0;
-    private int lastY = 0;
 
     //animation
     private int keyFrameIndex = 0, FPS = 30, time;
@@ -72,9 +66,13 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
     
     //weights
     private boolean weightInit = false;
-    
-    //camera
-    private int CX = 10, CY = 10, CZ = -50;
+
+    //movements
+    private float CAMERA_ZOOM = -50;
+    private float CAMERA_X = 10;
+    private float CAMERA_Y = 10;
+    private int lastX = 0;
+    private int lastY = 0;
     
 	public Animator(){
 
@@ -93,7 +91,8 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 		//get data
 		Bone root = Main.root;
-		//
+		faces = Main.faces;
+
 		/*
 		Bone root;
 		root = new Bone(new Point3D(0,0,0), null);
@@ -113,7 +112,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		root.getChild().get(2).addChild(new Point3D(-10,-10,10));
 		root.getChild().get(2).getChild().get(0).setName(7);
 		*/
-		mesh = new Mesh(Main.vertices, root);
+		mesh = new Mesh(Main.vertices, Main.faces, root);
 		
 
 		//intialization
@@ -126,6 +125,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		canvas.addGLEventListener(this);
 		canvas.addMouseListener(this);
 		canvas.addMouseMotionListener(this);
+		canvas.addMouseWheelListener(this);
 		canvas.addKeyListener(this);
 		canvas.setFocusable(true);
 
@@ -158,9 +158,6 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 		// We want a nice perspective.
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
-
-		//set camera
-		setCamera(gl, glu, CY, CY, CZ);	
 	}
 
 	@Override
@@ -195,24 +192,17 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	private void render(GLAutoDrawable drawable) {
 
 		gl = drawable.getGL().getGL2();
-
-		// Clear screen.
+		
+		// clear screen.
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
-
-		//rotate
-		gl.glLoadIdentity();
-
-		//gl.glTranslatef(0, 0, -zoom);
-        //gl.glTranslatef(tX, tY, 0);
-
-		//gl.glRotatef(rotX, 1, 0, 0);
-        //gl.glRotatef(rotY, 0, 1, 0);
         
-        //draw bone system
+		//set camera
+		setCamera(gl, glu, CAMERA_X, CAMERA_Y, CAMERA_ZOOM);
+        
+		//draw bone system
       	drawBone(mesh.getRoot(), gl);
 
       	//draw skin
-      	gl.glColor3d(1, 0, 0);
       	drawSkin(gl);
       		
       	//draw axis and grid
@@ -223,8 +213,8 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	}
 	
 	private void updateSkin(){
-		//System.out.println();
-		for(Node<Triangle> v: mesh.getVertices()){
+
+		for(Node v: mesh.getVertices()){
 			ArrayList<BoneSkinBinding> bindings = v.getBoneSkinBindings();
 			double x = 0, y = 0, z = 0;
 			for(BoneSkinBinding b: bindings){
@@ -239,27 +229,84 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 				
 				
 			}
-			//System.out.println("x: "+x+"y :"+y+"z: "+z);
-			
-			
-			for(Triangle t: v.getAttachedTriangles()){
-				if(t.getA().equals(v.getNewPosition())){
-					t.setA(new Point3D(x, y, z));
-				}else if(t.getB().equals(v.getNewPosition())){
-					t.setB(new Point3D(x, y, z));
-				}else if(t.getC().equals(v.getNewPosition())){
-					t.setC(new Point3D(x, y, z));
+
+			for(Integer index: v.getAttachedFaces()){
+				Triangle t = faces.get(index);
+				if(t.getA().equals(v.getInitialPositioln())){
+					mesh.getFaces().get(index).setA(new Point3D(x, y, z));
+				}else if(t.getB().equals(v.getInitialPositioln())){
+					mesh.getFaces().get(index).setB(new Point3D(x, y, z));
+				}else if(t.getC().equals(v.getInitialPositioln())){
+					mesh.getFaces().get(index).setC(new Point3D(x, y, z));
 				}
-				System.out.println(t.getA().getX()+" "+t.getA().getY()+" "+t.getA().getZ());
-				System.out.println(t.getB().getX()+" "+t.getB().getY()+" "+t.getB().getZ());
-				System.out.println(t.getC().getX()+" "+t.getC().getY()+" "+t.getC().getZ());
-			}
-			System.out.println();
-			v.setNewPosition(x, y, z);
+			}			
 		}
-		
 	}
 	
+private void drawBone(Bone bone, GL2 gl){
+		
+		gl.glPushMatrix();
+		
+		/*
+		if(bone.getParent()!=null){
+			gl.glBegin(GL2.GL_LINE_LOOP);
+			gl.glVertex3d(bone.getInitPosition().getX(), 
+					bone.getInitPosition().getY(), 
+					bone.getInitPosition().getZ());
+			gl.glVertex3d(bone.getParent().getInitPosition().getX(), 
+					bone.getParent().getInitPosition().getY(), 
+					bone.getParent().getInitPosition().getZ());
+			gl.glEnd();
+		}
+		*/
+		double[] m = new double[16];
+		
+		if(bone.getParent()==null){
+			gl.glTranslated(bone.getInitPosition().getX(),
+				bone.getInitPosition().getY(),
+				bone.getInitPosition().getZ());
+		}
+		
+		
+		Vector3D rotXYZ = bone.getRotXYZ();
+		gl.glRotated(Math.toDegrees(bone.getAngle()), rotXYZ.getX(), rotXYZ.getY(), rotXYZ.getZ());	
+		
+		if(currentBone==bone.getName()){
+			gl.glColor3d(0, 0, 1);
+		}else{
+			gl.glColor3d(0, 1, 0);
+		}
+		gl.glBegin(GL2.GL_LINE_LOOP);
+		gl.glVertex3d(0, 0, 0);
+		gl.glVertex3d(bone.getLength(), 0, 0);
+				
+		gl.glEnd();
+		
+		gl.glTranslated(bone.getLength(), 0, 0);	
+		
+		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, m, 0);
+		bone.setAbsoluteMatrix(m);
+		//System.out.println(bone.getAbsoluteMatrix().toString());
+		//System.out.println(m[12]+" "+m[13]+" "+m[14]);
+		for(Bone child : bone.getChild()){
+			drawBone(child, gl);
+		}
+		
+		gl.glPopMatrix();
+
+	}
+
+	private void drawSkin(GL2 gl){
+		gl.glColor3d(1, 0, 0);
+	
+		for(Triangle t: mesh.getFaces()){
+			gl.glBegin(GL2.GL_LINE_STRIP);
+			gl.glVertex3d(t.getA().getX(), t.getA().getY(), t.getA().getZ());
+			gl.glVertex3d(t.getB().getX(), t.getB().getY(), t.getB().getZ());
+			gl.glVertex3d(t.getC().getX(), t.getC().getY(), t.getC().getZ());
+			gl.glEnd();
+		}
+	}
 	
 	private void drawAxis(GL2 gl) {
 
@@ -295,74 +342,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
         gl.glEnd();
         
     }
-    
-	private void drawSkin(GL2 gl){
-		//gl.glPushMatrix();
-		
-		for(Node<Triangle> v: mesh.getVertices()){
-			
-			for(Triangle t: v.getAttachedTriangles()){
-				gl.glBegin(GL2.GL_LINE_STRIP);
-				gl.glVertex3d(t.getA().getX(), t.getA().getY(), t.getA().getZ());
-				gl.glVertex3d(t.getB().getX(), t.getB().getY(), t.getB().getZ());
-				gl.glVertex3d(t.getC().getX(), t.getC().getY(), t.getC().getZ());
-				gl.glEnd();
-			}
-		}
-		//gl.glPopMatrix();
-	}
 	
-	private void drawBone(Bone bone, GL2 gl){
-		
-		gl.glPushMatrix();
-		
-		/*
-		if(bone.getParent()!=null){
-			gl.glBegin(GL2.GL_LINE_LOOP);
-			gl.glVertex3d(bone.getInitPosition().getX(), 
-					bone.getInitPosition().getY(), 
-					bone.getInitPosition().getZ());
-			gl.glVertex3d(bone.getParent().getInitPosition().getX(), 
-					bone.getParent().getInitPosition().getY(), 
-					bone.getParent().getInitPosition().getZ());
-			gl.glEnd();
-		}
-		*/
-		double[] m = new double[16];
-		
-		if(bone.getParent()==null){
-			gl.glTranslated(bone.getInitPosition().getX(),
-				bone.getInitPosition().getY(),
-				bone.getInitPosition().getZ());
-		}
-		
-		Vector3D rotXYZ = bone.getRotXYZ();
-		gl.glRotated(Math.toDegrees(bone.getAngle()), rotXYZ.getX(), rotXYZ.getY(), rotXYZ.getZ());	
-		
-		if(currentBone==bone.getName()){
-			gl.glColor3d(0, 0, 1);
-		}else{
-			gl.glColor3d(0, 1, 0);
-		}
-		gl.glBegin(GL2.GL_LINE_LOOP);
-		gl.glVertex3d(0, 0, 0);
-		gl.glVertex3d(bone.getLength(), 0, 0);
-				
-		gl.glEnd();
-		
-		gl.glTranslated(bone.getLength(), 0, 0);	
-		
-		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, m, 0);
-		bone.setAbsoluteMatrix(m);
-		//System.out.println(bone.getAbsoluteMatrix().toString());
-		//System.out.println(m[12]+" "+m[13]+" "+m[14]);
-		for(Bone child : bone.getChild()){
-			drawBone(child, gl);
-		}
-		
-		gl.glPopMatrix();
-
-	}
 	private void setCamera(GL2 gl, GLU glu, double cX, double cY, double cZ) {
 		// Change to projection matrix.
 		gl.glMatrixMode(GL2.GL_PROJECTION);
@@ -371,8 +351,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		// Perspective.
 		float widthHeightRatio = (float) getWidth() / (float) getHeight();
 		glu.gluPerspective(45, widthHeightRatio, 1, 1000);
-
-		glu.gluLookAt(cX, cY, cZ, 0, 0, 0, 0, 1, 0);
+		glu.gluLookAt(cX, cY, cZ, 0, 1, 0, 0, 1, 0);
 		
 		// Change back to model view matrix.
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
@@ -407,12 +386,6 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	}
 
 	@Override
-	public void keyReleased(KeyEvent arg0) {}
-
-	@Override
-	public void keyTyped(KeyEvent arg0) {}
-
-	@Override
 	public void mouseDragged(MouseEvent e) {
 
          int diffx = e.getX() - lastX;
@@ -420,27 +393,36 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
          lastX = e.getX();
          lastY = e.getY();
-         
-         //if its a button1 drag, then rotate.
-         //if its a button2 drag, then pan.
-         //if its a button3 drag, then zoom.
+
          if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) == MouseEvent.BUTTON1_MASK) {
-             rotX += 0.5f * diffy;
-             rotY += 0.5f * diffx;
-
+             CAMERA_X += 0.05f * diffx;
+             CAMERA_Y -= 0.05f * diffy;
          }
-
-         if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) == MouseEvent.BUTTON3_MASK) {
-             tX += 0.05f * diffx;
-             tY -= 0.05f * diffy;
-
-         }
-
-         if ((e.getModifiers() & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK) {
-             zoom -= 0.05f * diffx;
-         }	
 	}
 
+	@Override
+	public void mousePressed(MouseEvent e) {
+		lastX = e.getX();
+		lastY = e.getY();
+	}
+	
+	
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		if(e.getWheelRotation()>0){
+			CAMERA_ZOOM -= 10;
+		}else if(e.getWheelRotation()<0){
+			CAMERA_ZOOM += 10;
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {}
+	
 	@Override
 	public void mouseMoved(MouseEvent e) {}
 
@@ -453,11 +435,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	@Override
 	public void mouseExited(MouseEvent e) {}
 
-	@Override
-	public void mousePressed(MouseEvent e) {
-		lastX = e.getX();
-		lastY = e.getY();
-	}
+	
 
 	@Override
 	public void mouseReleased(MouseEvent e) {}

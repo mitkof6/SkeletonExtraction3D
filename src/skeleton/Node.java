@@ -1,28 +1,28 @@
 package skeleton;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 import animation.BoneSkinBinding;
 
 import math.geom3d.Point3D;
 
-public class Node<T> implements Cloneable{
+public class Node implements Cloneable{
 
-	private ArrayList<T> attachedTriangles = new ArrayList<>();
+	private Vector<Integer> attachedFaceIndex = new Vector<>();
 	private ArrayList<BoneSkinBinding> boneSkinBindings = new ArrayList<>();
-	private Point3D initialPosition, newPosition;
+	private Point3D initialPosition;
 	
 	public Node(double x, double y, double z){
 		initialPosition = new Point3D(x, y, z);
-		newPosition = new Point3D(x, y, x);
 	}
 	
-	public ArrayList<T> getAttachedTriangles(){
-		return this.attachedTriangles;
+	public Vector<Integer> getAttachedFaces(){
+		return this.attachedFaceIndex;
 	}
 	
-	public void addTriangle(T t){
-		this.attachedTriangles.add(t);
+	public void addFace(Integer index){
+		this.attachedFaceIndex.add(index);
 	}
 	
 	public Point3D getInitialPositioln(){
@@ -33,22 +33,14 @@ public class Node<T> implements Cloneable{
 		this.boneSkinBindings.add(bSB);
 	}
 	
-	public Point3D getNewPosition(){
-		return newPosition;
-	}
-	
-	public void setNewPosition(double x, double y, double z){
-		newPosition = new Point3D(x, y, z);
-	}
-	
 	public ArrayList<BoneSkinBinding> getBoneSkinBindings(){
 		return this.boneSkinBindings;
 	}
-	public Node<T> clone(){
-		Node<T> result = new Node<>(initialPosition.getX(), 
+	public Node clone(){
+		Node result = new Node(initialPosition.getX(), 
 						initialPosition.getY(), initialPosition.getZ());
-		for(T t: attachedTriangles){
-			result.addTriangle(t);
+		for(Integer t: attachedFaceIndex){
+			result.addFace(t);
 		}
 		return result;
 	}

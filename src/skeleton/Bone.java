@@ -13,7 +13,7 @@ public class Bone {
 	private Point3D initPosition;
 	private Bone parent;
 	private Vector<Bone> child = new Vector<>();
-	private Matrix absolute = Matrix.identity(4, 4);
+	private Matrix absoluteMatrix = Matrix.identity(4, 4);
 	private double length;
 	private double angle;
 	private Vector3D rotXYZ;
@@ -35,9 +35,6 @@ public class Bone {
 			angle = 0;
 			length = 0;
 		}
-		
-		
-		
 	}
 	
 	public void addChild(Point3D initPosition){
@@ -239,12 +236,12 @@ public class Bone {
 							{m[2], m[6], m[10], m[14]},
 							{m[3], m[7], m[11], m[15]}};
 		
-		this.absolute = new Matrix(array);
+		this.absoluteMatrix = new Matrix(array);
 		//System.out.println(Arrays.deepToString(ablolute.getArray()));
 	}
 	
 	public Matrix getAbsoluteMatrix(){
-		return this.absolute;
+		return this.absoluteMatrix;
 	}
 
 	public void setAngle(double angle) {

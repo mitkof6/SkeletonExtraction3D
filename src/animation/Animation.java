@@ -1,7 +1,6 @@
 package animation;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +9,6 @@ import java.util.Vector;
 import Jama.Matrix;
 
 import main.Main;
-import math.Triangle;
 import skeleton.Bone;
 import skeleton.Node;
 
@@ -64,7 +62,7 @@ public class Animation {
 		getBones(mesh.getRoot(), bones);
 		
 
-		for(Node<Triangle> v: mesh.getVertices()){
+		for(Node v: mesh.getVertices()){
 			
 			weightedBones = new HashMap<>();
 			
@@ -76,11 +74,11 @@ public class Animation {
 			List<Double> distance = new ArrayList<Double>(weightedBones.keySet());
 			Collections.sort(distance);
 			
-			System.out.println("Node: "+v.getInitialPositioln().getX()+" "+v.getInitialPositioln().getY()+" "+v.getInitialPositioln().getZ());
+			//System.out.println("Node: "+v.getInitialPositioln().getX()+" "+v.getInitialPositioln().getY()+" "+v.getInitialPositioln().getZ());
 			for(int i = 0;i<dependencies;i++){
-				System.out.println("Distance: "+distance.get(i));
+				//System.out.println("Distance: "+distance.get(i));
 				Bone b = weightedBones.get(distance.get(i));
-				System.out.println("Bone: "+b.getInitPosition().getX()+" "+b.getInitPosition().getY()+" "+b.getInitPosition().getZ());
+				//System.out.println("Bone: "+b.getInitPosition().getX()+" "+b.getInitPosition().getY()+" "+b.getInitPosition().getZ());
 				if(distance.get(i)==0){
 					v.addBoneSkinBinding(new BoneSkinBinding(
 							getBindingMatrix(v, b), 1, b));
@@ -102,7 +100,7 @@ public class Animation {
 		}
 	}
 
-	private static Matrix getBindingMatrix(Node<Triangle> v, Bone b){
+	private static Matrix getBindingMatrix(Node v, Bone b){
 
 		double thi = 0;
 		double dx = v.getInitialPositioln().getX() - b.getInitPosition().getX();
@@ -113,7 +111,7 @@ public class Animation {
 						{0, 0, 1, dz},
 						{0, 0, 0, 1}};
 
-		System.out.println(Arrays.deepToString(array));
+		//System.out.println(Arrays.deepToString(array));
 		return new Matrix(array);
 	}
 

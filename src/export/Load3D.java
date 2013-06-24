@@ -15,8 +15,8 @@ import math.Triangle;
 
 public class Load3D {
 	
-	private Vector<Node<Triangle>> vertices = new Vector<Node<Triangle>>();
-	private Vector<Triangle> triangles = new Vector<Triangle>();
+	private Vector<Node> vertices = new Vector<>();
+	private Vector<Triangle> faces = new Vector<>();
 	
 	public Load3D(String path) throws FileNotFoundException{
 		
@@ -32,19 +32,19 @@ public class Load3D {
 			}
 			switch (line[0].charAt(0)) {
 				case 'v':
-					vertices.addElement(new Node<Triangle>(Double.parseDouble(line[1]), 
+					vertices.addElement(new Node(Double.parseDouble(line[1]), 
 							Double.parseDouble(line[2]), 
 							Double.parseDouble(line[3])));
 					break;
 				case 'f':
-					triangles.addElement(new Triangle(
+					faces.addElement(new Triangle(
 							vertices.get(Integer.parseInt(line[1])-1).getInitialPositioln(),
 							vertices.get(Integer.parseInt(line[2])-1).getInitialPositioln(),
 							vertices.get(Integer.parseInt(line[3])-1).getInitialPositioln()));
 					
-					vertices.get(Integer.parseInt(line[1])-1).addTriangle(triangles.lastElement());
-					vertices.get(Integer.parseInt(line[2])-1).addTriangle(triangles.lastElement());
-					vertices.get(Integer.parseInt(line[3])-1).addTriangle(triangles.lastElement());
+					vertices.get(Integer.parseInt(line[1])-1).addFace(faces.size()-1);
+					vertices.get(Integer.parseInt(line[2])-1).addFace(faces.size()-1);
+					vertices.get(Integer.parseInt(line[3])-1).addFace(faces.size()-1);
 					
 					break;
 				default:
@@ -54,11 +54,11 @@ public class Load3D {
 		inputStream.close();
 	}
 
-	public Vector<Node<Triangle>> getVertices() {
+	public Vector<Node> getVertices() {
 		return vertices;
 	}
 
-	public Vector<Triangle> getTriangles() {
-		return triangles;
+	public Vector<Triangle> getFaces() {
+		return faces;
 	}
 }

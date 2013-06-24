@@ -36,14 +36,13 @@ public class SkeletonExtraction {
 			new Vector3D(1,-1,1)
 	};
 	
-	private Vector<Triangle> triangles;
-	
+	private Vector<Triangle> faces;
 	private Vector<Chain> chains = new Vector<>();
 	
 	public SkeletonExtraction(Vector<Triangle> triangles, int pushingFactor, 
 			int iterations, int step){
 		
-		this.triangles = triangles;
+		this.faces = triangles;
 		
 		this.PUSHING_FACTOR = pushingFactor;
 		this.ITERATIONS = iterations;
@@ -56,13 +55,13 @@ public class SkeletonExtraction {
 	/**
 	 * Run the algorithm to generate bones and joints
 	 */
-	public void getVDS(Vector<Node<Triangle>> vertices){
+	public void getVDS(Vector<Node> vertices){
 		
 		System.out.println("Prossesing skeleton workers please wait..");
 		
 		ExecutorService executor = Executors.newFixedThreadPool(vertices.size()/2);
 		
-		for(Node<Triangle> v : vertices){
+		for(Node v : vertices){
 			//System.out.println("Node: "+v.getX()+" "+v.getY()+" "+v.getZ());
 			Runnable worker = new Worker(v);
 			executor.execute(worker);
@@ -132,7 +131,7 @@ public class SkeletonExtraction {
 			Ray ray = new Ray(x, direction);
 			//System.out.println(x.getX()+" "+x.getY()+" "+x.getZ());
 			
-			for(Triangle t: triangles){
+			for(Triangle t: faces){
 				double[] distance = new double[1];
 				if(ray.intersectRayTriangle(t, distance)){
 					list.add(new RayPosition(distance[0], direction));
@@ -219,13 +218,13 @@ public class SkeletonExtraction {
 	/**
 	 * Pushes the point interior to the surface S
 	 */
-	private Point3D pushInside(Node<Triangle> p){
+	private Point3D pushInside(Node p){
 		
 		Vector3D direction = new Vector3D(0, 0, 0);
 		
-		for(Triangle t : p.getAttachedTriangles()){
+		for(Integer index : p.getAttachedFaces()){
 			
-			direction = direction.plus(t.getNormal().times(-1));
+			direction = direction.plus(faces.get(index).getNormal().times(-1));
 			
 		}
 		
@@ -251,9 +250,9 @@ public class SkeletonExtraction {
 	
 	private class Worker implements Runnable{
 		
-		private Node<Triangle> v;
+		private Node v;
 		
-		public Worker(Node<Triangle> v){
+		public Worker(Node v){
 			this.v = v;
 		}
 		

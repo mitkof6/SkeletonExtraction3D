@@ -2,29 +2,37 @@ package animation;
 
 import java.util.Vector;
 
+import math.Triangle;
+
 import skeleton.Bone;
 import skeleton.Node;
 
-import math.Triangle;
-
 public class Mesh {
 
-	private Vector<Node<Triangle>> vertices = new Vector<>();
+	private Vector<Node> vertices = new Vector<>();
+	private Vector<Triangle> faces = new Vector<>();
 	private Bone root;
 	
-	public Mesh(Vector<Node<Triangle>> vertices, Bone root){
-		for(Node<Triangle> n: vertices){
+	public Mesh(Vector<Node> vertices, Vector<Triangle> triangles, Bone root){
+		for(Node n: vertices){
 			this.vertices.add(n.clone());
+		}
+		for(Triangle t: triangles){
+			this.faces.add(t.clone());
 		}
 		this.root = root;
 	}
 
-	public Vector<Node<Triangle>> getVertices() {
-		return vertices;
+	public Vector<Node> getVertices() {
+		return this.vertices;
+	}
+	
+	public Vector<Triangle> getFaces(){
+		return this.faces;
 	}
 
 	public Bone getRoot() {
-		return root;
+		return this.root;
 	}
 	
 }
