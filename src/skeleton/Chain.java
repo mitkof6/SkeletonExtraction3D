@@ -4,7 +4,11 @@ import java.util.Vector;
 
 import math.geom3d.Point3D;
 
-
+/**
+ * Chain entity used to represent a set of points relation
+ * 
+ * @author Jim Stanev
+ */
 public class Chain{
 	
 	private Vector<Point3D> positions = new Vector<>();

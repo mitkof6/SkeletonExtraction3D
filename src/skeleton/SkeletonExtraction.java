@@ -12,13 +12,25 @@ import math.Triangle;
 import math.geom3d.Point3D;
 import math.geom3d.Vector3D;
 
-
+/**
+ * Skeleton extraction algorithm with visible repulsive forece
+ * 
+ * @author Jim Stanev
+ */
 public class SkeletonExtraction {
 
+	/**
+	 * used for preventing dividing by zero by f(x)=1/x
+	 */
 	private static final double C_INF = 0.000001;
+	
 	private final int PUSHING_FACTOR;
 	private final int ITERATIONS;
 	private final int STEP;
+	
+	/**
+	 * possible ray directions
+	 */
 	private Vector3D[] rayDirections = {
 			new Vector3D(1,0,0),
 			new Vector3D(0,1,0),
@@ -39,26 +51,45 @@ public class SkeletonExtraction {
 	private Vector<Triangle> faces;
 	private Vector<Chain> chains = new Vector<>();
 	
-	public SkeletonExtraction(Vector<Triangle> triangles, int pushingFactor, 
+	/**
+	 * Constructor
+	 * 
+	 * @param faces the faces of a model
+	 * @param pushingFactor pushin factor
+	 * @param iterations number of iteration
+	 * @param step the step of vrf
+	 */
+	public SkeletonExtraction(Vector<Triangle> faces, int pushingFactor, 
 			int iterations, int step){
 		
-		this.faces = triangles;
+		this.faces = faces;
 		
 		this.PUSHING_FACTOR = pushingFactor;
 		this.ITERATIONS = iterations;
 		this.STEP = step;
 	}
 	
+	/**
+	 * The result of skeleton extraction
+	 * 
+	 * @return the chains of points
+	 */
 	public Vector<Chain> getChain(){
 		return this.chains;
 	}
+	
 	/**
-	 * Run the algorithm to generate bones and joints
+	 * Run the algorithm. For better performance, pool of 
+	 * threads pattern used to divide the work witch can be
+	 * parallel executed.
+	 * 
+	 * @param vertices the vertices of a model
 	 */
 	public void getVDS(Vector<Node> vertices){
 		
 		System.out.println("Prossesing skeleton workers please wait..");
 		
+		//pool of threads for better performance
 		ExecutorService executor = Executors.newFixedThreadPool(vertices.size()/2);
 		
 		for(Node v : vertices){
@@ -73,12 +104,9 @@ public class SkeletonExtraction {
 
 	/**
 	 * Locates the local minimum of a seed point using the vrf(x), termination
-	 * condition |vrf(x+1)|>|vrf(x)| (not working so iteration inserted) so
-	 * iteration factor inserted.
+	 * condition |vrf(x+1)|>|vrf(x)| (not working so iteration inserted).
 	 *
 	 * @param seed the initial position
-	 * @param edges the edges of the polygon
-	 * @return a set of continues points
 	 */
 	private Chain localeMinimum(Point3D seed){
 
@@ -120,6 +148,9 @@ public class SkeletonExtraction {
 	/**
 	 * Computes the visible set of a given point, with sampling rays and
 	 * intersection points
+	 * 
+	 * @param x the point for computing the visible set
+	 * @return the visible set of points
 	 */
 	private ArrayList<Point3D> visibleSet(Point3D x){
 		
@@ -133,7 +164,7 @@ public class SkeletonExtraction {
 			
 			for(Triangle t: faces){
 				double[] distance = new double[1];
-				if(ray.intersectRayTriangle(t, distance)){
+				if(ray.isRayTriangleIntersecting(t, distance)){
 					list.add(new RayPosition(distance[0], direction));
 				}
 			}
@@ -168,7 +199,7 @@ public class SkeletonExtraction {
 	}
 	
 	/**
-	 * VRF(x)~ = Î£f(||vi-x||2)*(vi-x)~
+	 * VRF(x)~ = Óf(||vi-x||2)*(vi-x)~
 	 * 
 	 * @param x interior of surface S
 	 * @param visibleSet the visible set
@@ -217,6 +248,9 @@ public class SkeletonExtraction {
 	
 	/**
 	 * Pushes the point interior to the surface S
+	 * 
+	 * @param p the point to be pushed
+	 * @return the result
 	 */
 	private Point3D pushInside(Node p){
 		
@@ -224,7 +258,7 @@ public class SkeletonExtraction {
 		
 		for(Integer index : p.getAttachedFaces()){
 			
-			direction = direction.plus(faces.get(index).getNormal().times(-1));
+			direction = direction.plus(faces.get(index).getNormalVector().times(-1));
 			
 		}
 		
@@ -238,6 +272,11 @@ public class SkeletonExtraction {
 		return new Point3D(result.getX(), result.getY(), result.getZ());
 	}
 	
+	/**
+	 * Used for ray representation by distance and direction
+	 * 
+	 * @author Jim Stanev
+	 */
 	private class RayPosition{
 		public double dist;
 		public Vector3D direction;
@@ -248,6 +287,11 @@ public class SkeletonExtraction {
 		}
 	}
 	
+	/**
+	 * The class of the worker used for better performance
+	 * 
+	 * @author Jim Stanev
+	 */
 	private class Worker implements Runnable{
 		
 		private Node v;

@@ -34,7 +34,12 @@ import math.geom3d.Vector3D;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
-
+/**
+ * The class for viewing the animation and interaction between
+ * bone system and skin
+ * 
+ * @author Jim Stanev
+ */
 public class Animator extends Frame implements GLEventListener, KeyListener, 
 	MouseListener, MouseMotionListener, MouseWheelListener{
 
@@ -47,38 +52,64 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	private GLCapabilities caps;
 	private GLCanvas canvas;
 	private FPSAnimator animator;
-	private GLU glu;
+	private GLU glu = new GLU();
 	private GL2 gl;
 
-	//data
+	/**
+	 * mesh containing the skeleton and the skin
+	 */
 	private Mesh mesh;
-	private Vector<Triangle> faces;
+	/**
+	 * the initial faces used for updating the skin faces in mesh object
+	 */
+	private Vector<Triangle> faces = new Vector<>();
 	
-	//bone selection
+	/**
+	 * used to mark the selected bone
+	 */
 	private int currentBone = 1;
 
-	//angle update
-	private double angleOffset = 0.1;
+	/**
+	 * used to add offset to an angle of the selected bone
+	 */
+	private static final double angleOffset = 0.1;
 
-    //animation
-    private int keyFrameIndex = 0, FPS = 30, time;
+
+	/**
+	 * animation parameters
+	 * kayFrameIndex: indicates the current animation frame used for recording a key frame
+	 * FPS: frames per second
+	 * time: used to indicate the animation frame during animation
+	 */
+    private int keyFrameIndex = 0, FPS =20, time;
     private boolean animationFlag = false;
     
-    //weights
+    /**
+     * boolean flag which indicates if bones-skin initialized
+     */
     private boolean weightInit = false;
 
-    //movements
+    /**
+     * camera movement parameters
+     */
     private float CAMERA_ZOOM = -50;
     private float CAMERA_X = 10;
     private float CAMERA_Y = 10;
     private int lastX = 0;
     private int lastY = 0;
     
+    /**
+     * the grid size
+     */
+    private static final int GRID_SIZE = 100;
+    
+    /**
+     * Constructor
+     */
 	public Animator(){
 
 		super("Animator");
-		this.setBounds(400, 20, Main.WIDTH, Main.HEIGHT);
-		//this.setFocusable(true);
+		this.setBounds(200, 20, Main.WIDTH, Main.HEIGHT);
 		
 		//dispose
 		this.addWindowListener(new WindowAdapter() {
@@ -90,32 +121,11 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		});
 
 		//get data
-		Bone root = Main.root;
 		faces = Main.faces;
-
-		/*
-		Bone root;
-		root = new Bone(new Point3D(0,0,0), null);
-		root.setBonesCount(7);
-		root.setName(1);
-		root.addChild(new Point3D(2.555,0,0));
-		root.getChild().get(0).setName(2);
-		root.addChild(new Point3D(0,5.5,0));
-		root.getChild().get(1).setName(3);
-		root.addChild(new Point3D(0,0,3.33));
-		root.getChild().get(2).setName(4);
-		//root.addChild(new Point3D(-10,0,0));
-		root.getChild().get(0).addChild(new Point3D(10,10,10));
-		root.getChild().get(0).getChild().get(0).setName(5);
-		root.getChild().get(1).addChild(new Point3D(-10,10,-10));
-		root.getChild().get(1).getChild().get(0).setName(6);
-		root.getChild().get(2).addChild(new Point3D(-10,-10,10));
-		root.getChild().get(2).getChild().get(0).setName(7);
-		*/
-		mesh = new Mesh(Main.vertices, Main.faces, root);
+		mesh = Animation.getInitialPose();
 		
 
-		//intialization
+		//profile init
 		glp =  GLProfile.getDefault();
 		GLProfile.initSingleton();
 		caps = new GLCapabilities(glp);
@@ -129,9 +139,6 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		canvas.addKeyListener(this);
 		canvas.setFocusable(true);
 
-		//glu
-		glu = new GLU();
-
 		//frame
 		this.add(canvas);
 
@@ -139,24 +146,23 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		animator = new FPSAnimator(canvas, FPS);
 		animator.add(canvas);
 		animator.start();
-
 	}
 
 	@Override
 	public void init(GLAutoDrawable drawable) {
 		gl = drawable.getGL().getGL2();
 
-		// Enable z- (depth) buffer for hidden surface removal. 
+		//enable z- (depth) buffer for hidden surface removal. 
 		gl.glEnable(GL2.GL_DEPTH_TEST);
 		gl.glDepthFunc(GL2.GL_LEQUAL);
 
-		// Enable smooth shading.
+		//enable smooth shading.
 		gl.glShadeModel(GL2.GL_SMOOTH);
 
-		// Define "clear" color
+		//define "clear" color
 		gl.glClearColor(0f, 0f, 0f, 0f);
 
-		// We want a nice perspective.
+		//nice perspective.
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
 	}
 
@@ -166,19 +172,20 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	@Override
 	public void display(GLAutoDrawable drawable) {
 		render(drawable);
-		if(weightInit==false){
-			Animation.initSkinWeights(mesh, Main.SKIN_DEPENDENCIES);
+		if(weightInit==false){//init bones-skin bindings
+			Animation.initializeSkinBoneRelation(mesh, Main.SKIN_DEPENDENCIES);
 			weightInit = true;
 		}
-		if(animationFlag){
+		if(animationFlag){//animation
 			Animation.interpolate(mesh.getRoot(), time);
 			time++;
 			if(time==mesh.getRoot().getKeyFrameSize()*FPS){
 				time = 0;
-				//root = Animation.getInitialPose();
+				mesh = Animation.getInitialPose();
+				weightInit = false;
 			}
 		}
-		updateSkin();
+		updateSkinPosition();
 	}
 
 	@Override
@@ -189,6 +196,11 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 	}
 
+	/**
+	 * Render method
+	 * 
+	 * @param drawable the drawable object
+	 */
 	private void render(GLAutoDrawable drawable) {
 
 		gl = drawable.getGL().getGL2();
@@ -197,7 +209,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		gl.glClear(GL2.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         
 		//set camera
-		setCamera(gl, glu, CAMERA_X, CAMERA_Y, CAMERA_ZOOM);
+		setCamera(gl, CAMERA_X, CAMERA_Y, CAMERA_ZOOM);
         
 		//draw bone system
       	drawBone(mesh.getRoot(), gl);
@@ -207,16 +219,22 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
       		
       	//draw axis and grid
         drawAxis(gl);
-        drawGrid(100, gl);
+        drawGrid(GRID_SIZE, gl);
         
 		gl.glFlush();
 	}
 	
-	private void updateSkin(){
+	/**
+	 * Calculates and updates the new skin position using
+	 * linear blend skinning
+	 */
+	private void updateSkinPosition(){
 
+		//calculate new position
 		for(Node v: mesh.getVertices()){
 			ArrayList<BoneSkinBinding> bindings = v.getBoneSkinBindings();
 			double x = 0, y = 0, z = 0;
+	
 			for(BoneSkinBinding b: bindings){
 
 				Vector3D pos = new Vector3D(
@@ -230,6 +248,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 				
 			}
 
+			//update position
 			for(Integer index: v.getAttachedFaces()){
 				Triangle t = faces.get(index);
 				if(t.getA().equals(v.getInitialPositioln())){
@@ -243,22 +262,16 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		}
 	}
 	
-private void drawBone(Bone bone, GL2 gl){
+	/**
+	 * Draws a bone
+	 * 
+	 * @param bone the bone to be drawn
+	 * @param gl the gl object
+	 */
+	private void drawBone(Bone bone, GL2 gl){
 		
 		gl.glPushMatrix();
 		
-		/*
-		if(bone.getParent()!=null){
-			gl.glBegin(GL2.GL_LINE_LOOP);
-			gl.glVertex3d(bone.getInitPosition().getX(), 
-					bone.getInitPosition().getY(), 
-					bone.getInitPosition().getZ());
-			gl.glVertex3d(bone.getParent().getInitPosition().getX(), 
-					bone.getParent().getInitPosition().getY(), 
-					bone.getParent().getInitPosition().getZ());
-			gl.glEnd();
-		}
-		*/
 		double[] m = new double[16];
 		
 		if(bone.getParent()==null){
@@ -268,7 +281,7 @@ private void drawBone(Bone bone, GL2 gl){
 		}
 		
 		
-		Vector3D rotXYZ = bone.getRotXYZ();
+		Vector3D rotXYZ = bone.getRotationAxis();
 		gl.glRotated(Math.toDegrees(bone.getAngle()), rotXYZ.getX(), rotXYZ.getY(), rotXYZ.getZ());	
 		
 		if(currentBone==bone.getName()){
@@ -286,8 +299,7 @@ private void drawBone(Bone bone, GL2 gl){
 		
 		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, m, 0);
 		bone.setAbsoluteMatrix(m);
-		//System.out.println(bone.getAbsoluteMatrix().toString());
-		//System.out.println(m[12]+" "+m[13]+" "+m[14]);
+
 		for(Bone child : bone.getChild()){
 			drawBone(child, gl);
 		}
@@ -296,6 +308,11 @@ private void drawBone(Bone bone, GL2 gl){
 
 	}
 
+	/**
+	 * Draws the skin
+	 * 
+	 * @param gl the gl object
+	 */
 	private void drawSkin(GL2 gl){
 		gl.glColor3d(1, 0, 0);
 	
@@ -308,6 +325,11 @@ private void drawBone(Bone bone, GL2 gl){
 		}
 	}
 	
+	/**
+	 * Draws some coordinates axis
+	 * 
+	 * @param gl the gl object
+	 */
 	private void drawAxis(GL2 gl) {
 
         gl.glLineWidth(4.f);
@@ -327,6 +349,12 @@ private void drawBone(Bone bone, GL2 gl){
         
     }
 
+	/**
+	 * Draws grid
+	 * 
+	 * @param size of the grid
+	 * @param gl the gl object
+	 */
     private void drawGrid(int size, GL2 gl) {
     	
         gl.glColor3f(0.5f, 0.5f, 0.5f);
@@ -343,7 +371,15 @@ private void drawBone(Bone bone, GL2 gl){
         
     }
 	
-	private void setCamera(GL2 gl, GLU glu, double cX, double cY, double cZ) {
+    /**
+     * Camera position setter
+     * 
+     * @param gl the gl object
+     * @param cX x coordinate of the camera
+     * @param cY y coordinate of the camera
+     * @param cZ z coordinate of the camera
+     */
+	private void setCamera(GL2 gl, double cX, double cY, double cZ) {
 		// Change to projection matrix.
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
@@ -410,9 +446,9 @@ private void drawBone(Bone bone, GL2 gl){
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if(e.getWheelRotation()>0){
-			CAMERA_ZOOM -= 10;
-		}else if(e.getWheelRotation()<0){
 			CAMERA_ZOOM += 10;
+		}else if(e.getWheelRotation()<0){
+			CAMERA_ZOOM -= 10;
 		}
 		
 	}
@@ -434,8 +470,6 @@ private void drawBone(Bone bone, GL2 gl){
 
 	@Override
 	public void mouseExited(MouseEvent e) {}
-
-	
 
 	@Override
 	public void mouseReleased(MouseEvent e) {}

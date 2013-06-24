@@ -6,6 +6,11 @@ import java.io.OutputStream;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
+/**
+ * Constructs a text area in which can be redirected streams
+ * 
+ * @author Jim Stanev
+ */
 public class JTextAreaRedirecction extends OutputStream{
 
 	private final JTextArea textArea;

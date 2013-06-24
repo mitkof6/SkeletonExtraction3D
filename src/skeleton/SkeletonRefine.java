@@ -5,6 +5,11 @@ import java.util.Vector;
 
 import math.geom3d.Point3D;
 
+/**
+ * Refines the result of skeleton extraction
+ * 
+ * @author Jim Stanev
+ */
 public class SkeletonRefine {
 
 	private final int SAMPLING, CHAIN_SIZE_TOLERANCE;
@@ -12,6 +17,15 @@ public class SkeletonRefine {
 	
 	private Vector<Chain> chains;
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param chains the chain vector
+	 * @param sampling the sampling index
+	 * @param distanceTolerance the distance tolerance
+	 * @param mergeTolerance the merge tolerance
+	 * @param chainSizeTolerance the chain size tolerance
+	 */
 	public SkeletonRefine(Vector<Chain> chains, int sampling,
 			double distanceTolerance, double mergeTolerance, int chainSizeTolerance){
 		this.chains = chains;
@@ -21,13 +35,19 @@ public class SkeletonRefine {
 		this.CHAIN_SIZE_TOLERANCE = chainSizeTolerance;
 	}
 	
+	/**
+	 * Begin method
+	 */
 	public void beginRefinement(){
-		sample();
+		sampling();
 		mergeNodes();
 		pruning();
 	}
 	
-	private void sample(){
+	/**
+	 * Rerafy the chains
+	 */
+	private void sampling(){
 		for(Chain c: chains){
 			Vector<Point3D> newChain = new Vector<>();
 			if(!c.getChain().isEmpty()){
@@ -43,6 +63,9 @@ public class SkeletonRefine {
 		}
 	}
 	
+	/**
+	 * Merges nodes
+	 */
 	private void mergeNodes(){
 		for(Chain c: chains){
 			for(int i = 0;i<chains.size();i++){
@@ -53,6 +76,9 @@ public class SkeletonRefine {
 		}
 	}
 	
+	/**
+	 * Pruning of small chains
+	 */
 	private void pruning(){
 		ArrayList<Chain> toRemove = new ArrayList<>();
 		for(Chain c: chains){
@@ -65,6 +91,12 @@ public class SkeletonRefine {
 			chains.remove(remove);
 		}
 	}
+	
+	/**
+	 * The refined chain vector getter
+	 * 
+	 * @return the chains
+	 */
 	public Vector<Chain> getChains(){
 		return this.chains;
 	}

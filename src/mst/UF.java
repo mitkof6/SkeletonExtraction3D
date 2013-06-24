@@ -1,26 +1,4 @@
 package mst;
-/****************************************************************************
- *  Compilation:  javac UF.java
- *  Execution:    java UF < input.txt
- *  Dependencies: StdIn.java StdOut.java
- *  Data files:   http://algs4.cs.princeton.edu/15uf/tinyUF.txt
- *                http://algs4.cs.princeton.edu/15uf/mediumUF.txt
- *                http://algs4.cs.princeton.edu/15uf/largeUF.txt
- *
- *  Weighted quick-union (without path compression).
- *
- *  % java UF < tinyUF.txt
- *  4 3
- *  3 8
- *  6 5
- *  9 4
- *  2 1
- *  5 0
- *  7 2
- *  6 1
- *  2 components
- *
- ****************************************************************************/
 
 
 /**

@@ -1,11 +1,4 @@
 package mst;
-/*************************************************************************
- *  Compilation:  javac Edge.java
- *  Execution:    java Edge
- *
- *  Immutable weighted edge.
- *
- *************************************************************************/
 
 /**
  *  The <tt>Edge</tt> class represents a weighted edge in an undirected graph.

@@ -8,6 +8,12 @@ import math.geom3d.Vector3D;
 import Jama.Matrix;
 import animation.KeyFrame;
 
+/**
+ * Bone entity represents a 3D position of the joint
+ * with respect to its parent
+ * 
+ * @author Jim Stanev
+ */
 public class Bone {
 	
 	private Point3D initPosition;
@@ -15,26 +21,31 @@ public class Bone {
 	private Vector<Bone> child = new Vector<>();
 	private Matrix absoluteMatrix = Matrix.identity(4, 4);
 	private double length;
-	private double angle;
+	private double angle, initialAngle;
 	private Vector3D rotXYZ;
 	private int name;
 	private int bonesCount;
 	private double angleOffset;
 	private Vector<KeyFrame> keyFrames = new Vector<>();
 
-	
+	/**
+	 * Constructor
+	 * 
+	 * @param initPosition the 3D position of the joint
+	 * @param parent the parent of the joint if root give null
+	 */
 	public Bone(Point3D initPosition, Bone parent){
 		this.initPosition = initPosition;
 		this.parent = parent;
 
-		
 		if(parent!=null){
-			generateRelativeMatrix(parent, initPosition);
-		}else{
+			defineRelativeParameters(parent, initPosition);
+		}else{//if root
 			rotXYZ = new Vector3D(0, 0, 1);
 			angle = 0;
 			length = 0;
 		}
+		this.initialAngle = this.angle;
 	}
 	
 	public void addChild(Point3D initPosition){
@@ -45,7 +56,13 @@ public class Bone {
 		this.keyFrames.add(k);
 	}
 	
-	private void generateRelativeMatrix(Bone parent, Point3D p){
+	/**
+	 * Generates the relative parameters of the parent child system
+	 * 
+	 * @param parent the parent
+	 * @param p child position
+	 */
+	private void defineRelativeParameters(Bone parent, Point3D p){
 		Vector3D a, b;
 		Vector3D rotationAxis;
 		double prod;
@@ -182,9 +199,10 @@ public class Bone {
 		
 		relative = new Matrix4(m);
 		*/
-		
-		
-		
+	}
+	
+	public void resetAngle(){
+		this.angle = this.initialAngle;
 	}
 	
 	public double getAngle() {
@@ -226,7 +244,7 @@ public class Bone {
 		return this.parent;
 	}
 	
-	public Vector3D getRotXYZ() {
+	public Vector3D getRotationAxis() {
 		return rotXYZ;
 	}
 	
@@ -237,7 +255,6 @@ public class Bone {
 							{m[3], m[7], m[11], m[15]}};
 		
 		this.absoluteMatrix = new Matrix(array);
-		//System.out.println(Arrays.deepToString(ablolute.getArray()));
 	}
 	
 	public Matrix getAbsoluteMatrix(){

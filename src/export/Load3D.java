@@ -13,11 +13,22 @@ import skeleton.Node;
 
 import math.Triangle;
 
+/**
+ * Loads a obj file
+ * 
+ * @author Jim Stanev
+ */
 public class Load3D {
 	
 	private Vector<Node> vertices = new Vector<>();
 	private Vector<Triangle> faces = new Vector<>();
 	
+	/**
+	 * Constructor
+	 * 
+	 * @param path the path to a file
+	 * @throws FileNotFoundException if there is a problem
+	 */
 	public Load3D(String path) throws FileNotFoundException{
 		
 		//initialize
@@ -54,10 +65,20 @@ public class Load3D {
 		inputStream.close();
 	}
 
+	/**
+	 * Vertices getter
+	 * 
+	 * @return the vertices of a model
+	 */
 	public Vector<Node> getVertices() {
 		return vertices;
 	}
 
+	/**
+	 * Faces getter
+	 * 
+	 * @return the faces of a model
+	 */
 	public Vector<Triangle> getFaces() {
 		return faces;
 	}

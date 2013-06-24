@@ -12,10 +12,25 @@ import main.Main;
 import skeleton.Bone;
 import skeleton.Node;
 
+/**
+ * Some static accessed animation functions used in the project
+ * 
+ * @author Jim Stanev
+ */
 public class Animation {
 	
+	/**
+	 * used to find minimum distanced bones
+	 */
 	private static HashMap<Double, Bone> weightedBones;
 
+	/**
+	 * Records a key frame with the current position of the
+	 * bone system to every bone
+	 * 
+	 * @param bone the bone
+	 * @param time the time index of the key frame
+	 */
 	public static void recordKeyFrame(Bone bone, int time){
 		
 		if(bone==null) throw new NullPointerException("Animation: bone is null");
@@ -27,6 +42,12 @@ public class Animation {
 		}
 	}
 
+	/**
+	 * Uses linear interpolation between kay frames
+	 * 
+	 * @param bone the bone 
+	 * @param time the time
+	 */
 	public static void interpolate(Bone bone, int time){
 
 		if(bone==null) return;
@@ -56,7 +77,13 @@ public class Animation {
 		}
 	}
 	
-	public static void initSkinWeights(Mesh mesh, int dependencies){
+	/**
+	 * Initializes the skin-bone relation
+	 * 
+	 * @param mesh the mesh object
+	 * @param dependencies the maximum number of attached bones to a node in the skin
+	 */
+	public static void initializeSkinBoneRelation(Mesh mesh, int dependencies){
 		
 		Vector<Bone> bones = new Vector<>();
 		getBones(mesh.getRoot(), bones);
@@ -74,11 +101,8 @@ public class Animation {
 			List<Double> distance = new ArrayList<Double>(weightedBones.keySet());
 			Collections.sort(distance);
 			
-			//System.out.println("Node: "+v.getInitialPositioln().getX()+" "+v.getInitialPositioln().getY()+" "+v.getInitialPositioln().getZ());
 			for(int i = 0;i<dependencies;i++){
-				//System.out.println("Distance: "+distance.get(i));
 				Bone b = weightedBones.get(distance.get(i));
-				//System.out.println("Bone: "+b.getInitPosition().getX()+" "+b.getInitPosition().getY()+" "+b.getInitPosition().getZ());
 				if(distance.get(i)==0){
 					v.addBoneSkinBinding(new BoneSkinBinding(
 							getBindingMatrix(v, b), 1, b));
@@ -92,14 +116,27 @@ public class Animation {
 		}
 	}
 	
-	private static void getBones(Bone root, Vector<Bone> bones){
-		bones.add(root);
-		for(int i = 0;i<root.getChild().size();i++){
-			bones.add(root.getChild().get(i));
-			getBones(root.getChild().get(i), bones);
+	/**
+	 * Used by initializeSkinBoneRelation to get a vector with the bones
+	 * 
+	 * @param bone the bone (give root to start)
+	 * @param bones the vector with the bones returned (must be initialized)
+	 */
+	private static void getBones(Bone bone, Vector<Bone> bones){
+		bones.add(bone);
+		for(int i = 0;i<bone.getChild().size();i++){
+			bones.add(bone.getChild().get(i));
+			getBones(bone.getChild().get(i), bones);
 		}
 	}
 
+	/**
+	 * Used by initializeSkinBoneRelation to generate the binding matrix
+	 * 
+	 * @param v the node
+	 * @param b the attached bone
+	 * @return the binding matrix
+	 */
 	private static Matrix getBindingMatrix(Node v, Bone b){
 
 		double thi = 0;
@@ -115,8 +152,26 @@ public class Animation {
 		return new Matrix(array);
 	}
 
-	public static Bone getInitialPose(){
-		return Main.root;
+	/**
+	 * Sets the initial pose
+	 * 
+	 * @return the new initialized mesh
+	 */
+	public static Mesh getInitialPose(){
+		resetBoneAngle(Main.root);
+		return new Mesh(Main.vertices, Main.faces, Main.root);
+	}
+	
+	/**
+	 * Used to initialize the angles of the bone system
+	 * @param bone
+	 */
+	private static void resetBoneAngle(Bone bone){
+		bone.resetAngle();
+		
+		for(Bone child: bone.getChild()){
+			resetBoneAngle(child);
+		}
 	}
 	
 }
