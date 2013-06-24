@@ -8,6 +8,8 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Vector;
 
 
@@ -20,9 +22,11 @@ import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
 
 import org.jeom3d.core.Matrix4;
+import org.jeom3d.core.Vector4;
 
 import skeleton.Bone;
 import skeleton.BoneFunction;
+import skeleton.Node;
 
 
 import main.Main;
@@ -30,6 +34,8 @@ import math.Triangle;
 import math.geom3d.Point3D;
 import math.geom3d.Vector3D;
 
+
+import Jama.Matrix;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -51,7 +57,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 	//data
 	private Vector<Triangle> triangles;
-	private Bone root;
+	//private Bone root;
 	private Mesh mesh;
 	
 	//bone selection
@@ -70,7 +76,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
     private int lastY = 0;
 
     //animation
-    private int keyFrameIndex = 0, FPS = 3, time;
+    private int keyFrameIndex = 0, FPS = 1, time;
     private boolean animationFlag = false;
     
     //weights
@@ -96,9 +102,10 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 		//get data
 		triangles = Main.triangles;
-		//root = Main.root;
+		//Bone root = Main.root;
+		//
 		
-		
+		Bone root;
 		root = new Bone(new Point3D(0,0,0), null);
 		root.setBonesCount(7);
 		root.setName(1);
@@ -179,11 +186,11 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 			weightInit = true;
 		}
 		if(animationFlag){
-			Animation.interpolate(root, time);
+			Animation.interpolate(mesh.getRoot(), time);
 			time++;
-			if(time==root.getKeyFrameSize()*FPS){
+			if(time==mesh.getRoot().getKeyFrameSize()*FPS){
 				time = 0;
-				root = Animation.getInitialPose();
+				//root = Animation.getInitialPose();
 			}
 		}
 	}
@@ -205,31 +212,97 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 		//rotate
 		gl.glLoadIdentity();
+
+		/*
 		//movements
-		gl.glTranslatef(0, 0, -zoom);
+        gl.glTranslatef(0, 0, -zoom);
         gl.glTranslatef(tX, tY, 0);
         gl.glRotatef(rotX, 1, 0, 0);
         gl.glRotatef(rotY, 0, 1, 0);
+		 */
+        setCamera(gl, glu, DISTANCE);
+        
+        
+        //draw bone system
+      	drawBone(mesh.getRoot(), gl);
 
-
+      	updateSkin();
+      	
+      	gl.glColor3d(1, 0, 0);
+      	drawSkin(gl);
+      		
         drawAxis(gl);
         drawGrid(10, gl);
 	
-
-		//draw bone system
-		drawBone(mesh.getRoot(), gl);
-
-		gl.glColor3d(1, 0, 0);
-		drawSkin(gl);
-		
-		
-
+        
+        
 		gl.glFlush();
 	}
 	
 	private void updateSkin(){
+		System.out.println();
+		for(Node<Triangle> v: mesh.getVertices()){
+			ArrayList<BoneSkinBinding> bindings = v.getBoneSkinBindings();
+			double x = 0, y = 0, z = 0;
+			Matrix result;
+			Vector4 vector;
+			double[] m;
+			for(BoneSkinBinding b: bindings){
+				result = b.getBind().times(b.getBone().getAbsoluteMatrix());
+				System.out.println(Arrays.deepToString(result.getArray()));
+				result = result.times(new Matrix(new double[]{
+								0, 
+								0, 
+								0,
+								1},1).transpose());
+				
+				result = result.times(b.getWeight());
+				
+				x += result.get(0, 0);
+				y += result.get(1, 0);
+				z += result.get(2, 0);
+				
+				/*
+				result = b.getBone().getAbsoluteMatrix().times(b.getBind());
+
+				System.out.println(b.getWeight());
+				
+				System.out.println(result.toString());
+				if(b.getBind().m[12]!=0&&b.getBind().m[12]!=0&&b.getBind().m[12]!=0){
+					vector = result.timesTranspose(new Vector4(v.getInitialPositioln().getX(),
+									v.getInitialPositioln().getY(),
+									v.getInitialPositioln().getZ(), 1));
+				}else{
+					vector = new Vector4(result.m[12], result.m[13], result.m[14], 1);
+				}
+				
+				x += vector.x*b.getWeight();
+				y += vector.y*b.getWeight();
+				z += vector.z*b.getWeight();
+				*/
+			}
+			System.out.println("x: "+x+"y :"+y+"z: "+z);
+			
+			/*
+			for(Triangle t: v.getAttachedTriangles()){
+				if(t.getA().equals(v.getNewPosition())){
+					t.setA(new Point3D(x, y, z));
+				}else if(t.getB().equals(v.getNewPosition())){
+					t.setB(new Point3D(x, y, z));
+				}else if(t.getC().equals(v.getNewPosition())){
+					t.setC(new Point3D(x, y, z));
+				}
+			}
+			v.setNewPosition(x, y, z);
+			*/
+			
+			
+			//System.out.println(v.getPosition().getX()+" "+v.getPosition().getY()+" "+v.getPosition().getZ());
+			
+		}
 		
 	}
+	
 	
 	private void drawAxis(GL2 gl) {
 
@@ -286,6 +359,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	    gl.glEnd();
 		 */
 
+		/*
 		
 		for(Triangle t : triangles){
 			gl.glBegin(GL2.GL_LINE_STRIP);
@@ -293,6 +367,18 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 			gl.glVertex3d(t.getB().getX(), t.getB().getY(), t.getB().getZ());
 			gl.glVertex3d(t.getC().getX(), t.getC().getY(), t.getC().getZ());
 			gl.glEnd();
+		}
+		*/
+		
+		for(Node<Triangle> v: mesh.getVertices()){
+			
+			for(Triangle t: v.getAttachedTriangles()){
+				gl.glBegin(GL2.GL_LINE_STRIP);
+				gl.glVertex3d(t.getA().getX(), t.getA().getY(), t.getA().getZ());
+				gl.glVertex3d(t.getB().getX(), t.getB().getY(), t.getB().getZ());
+				gl.glVertex3d(t.getC().getX(), t.getC().getY(), t.getC().getZ());
+				gl.glEnd();
+			}
 		}
 		gl.glPopMatrix();
 	}
@@ -338,7 +424,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		gl.glTranslated(bone.getLength(), 0, 0);	
 		
 		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, m, 0);//GL_MODELVIEW_MATRIX
-		bone.setAbsoluteMatrix(new Matrix4(m));
+		bone.setAbsoluteMatrix(m);
 		//System.out.println(bone.getAbsoluteMatrix().toString());
 		//System.out.println(m[12]+" "+m[13]+" "+m[14]);
 		for(Bone child : bone.getChild()){
@@ -356,9 +442,9 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		// Perspective.
 		float widthHeightRatio = (float) getWidth() / (float) getHeight();
 		glu.gluPerspective(45, widthHeightRatio, 1, 1000);
-		glu.gluLookAt(0, 0, distance, 0, 0, 0, 0, 1, 0);
 
-
+		glu.gluLookAt(this.rotX, this.rotY, -zoom, 0, 0, 0, 0, 1, 0);
+		
 		// Change back to model view matrix.
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
 		gl.glLoadIdentity();
@@ -368,21 +454,21 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode()==KeyEvent.VK_N){
 			currentBone++;
-			if(currentBone==root.getBonesCount()){
+			if(currentBone==mesh.getRoot().getBonesCount()){
 				currentBone = 1;
 			}
 		}else if(e.getKeyCode()==KeyEvent.VK_UP){
-			Bone result = BoneFunction.findByName(root, currentBone);
+			Bone result = BoneFunction.findByName(mesh.getRoot(), currentBone);
 			if(result!=null){
 				result.setAngle(result.getAngle()+angleOffset);
 			}
 		}else if(e.getKeyCode()==KeyEvent.VK_DOWN){
-			Bone result = BoneFunction.findByName(root, currentBone);
+			Bone result = BoneFunction.findByName(mesh.getRoot(), currentBone);
 			if(result!=null){
 				result.setAngle(result.getAngle()-angleOffset);
 			}
 		}else if(e.getKeyCode()==KeyEvent.VK_R){
-			Animation.recordKeyFrame(root, keyFrameIndex);
+			Animation.recordKeyFrame(mesh.getRoot(), keyFrameIndex);
 			keyFrameIndex += FPS;
 		}else if(e.getKeyCode()==KeyEvent.VK_A){
 			time = 0;
@@ -405,7 +491,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
          lastX = e.getX();
          lastY = e.getY();
-
+         
          //if its a button1 drag, then rotate.
          //if its a button2 drag, then pan.
          //if its a button3 drag, then zoom.
@@ -423,8 +509,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
          if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) == MouseEvent.BUTTON3_MASK) {
              zoom -= 0.05f * diffx;
-         }
-		
+         }	
 	}
 
 	@Override

@@ -6,5 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jogl"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JavaGeom"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/JGeom"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Jama"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -19,7 +19,7 @@ public class InfoScreen extends JFrame{
 		//this.setLayout(new BorderLayout());
 		
 		//text area
-		JTextArea textArea = new JTextArea(20, 60);
+		JTextArea textArea = new JTextArea(100, 60);
 		textArea.setEditable(false);
 		textArea.setAutoscrolls(true);
 		

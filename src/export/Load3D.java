@@ -38,9 +38,9 @@ public class Load3D {
 					break;
 				case 'f':
 					triangles.addElement(new Triangle(
-							vertices.get(Integer.parseInt(line[1])-1).getPoint(),
-							vertices.get(Integer.parseInt(line[2])-1).getPoint(),
-							vertices.get(Integer.parseInt(line[3])-1).getPoint()));
+							vertices.get(Integer.parseInt(line[1])-1).getInitialPositioln(),
+							vertices.get(Integer.parseInt(line[2])-1).getInitialPositioln(),
+							vertices.get(Integer.parseInt(line[3])-1).getInitialPositioln()));
 					
 					vertices.get(Integer.parseInt(line[1])-1).addTriangle(triangles.lastElement());
 					vertices.get(Integer.parseInt(line[2])-1).addTriangle(triangles.lastElement());

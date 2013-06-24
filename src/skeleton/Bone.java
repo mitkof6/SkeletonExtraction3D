@@ -7,6 +7,7 @@ import math.geom3d.Vector3D;
 
 import org.jeom3d.core.Matrix4;
 
+import Jama.Matrix;
 import animation.KeyFrame;
 
 public class Bone {
@@ -14,11 +15,11 @@ public class Bone {
 	private Point3D initPosition;
 	private Bone parent;
 	private Vector<Bone> child = new Vector<>();
-	private Matrix4 
-			relativeTranslation = Matrix4.identity(),
-			relativeRotation = Matrix4.identity(),
-			absolute = Matrix4.identity(),
-			relative = Matrix4.identity();
+	private Matrix 
+			relativeTranslation = Matrix.identity(4, 4),
+			relativeRotation = Matrix.identity(4, 4),
+			absolute = Matrix.identity(4, 4),
+			relative = Matrix.identity(4, 4);
 			//absoluteRotation = Matrix4.identity();
 	private double length;
 	private double angle;
@@ -114,15 +115,6 @@ public class Bone {
 		//System.out.println("L: "+length);
 		
 		
-		
-		
-		relativeRotation.setRotate(phi, rotationAxis.getX(), rotationAxis.getY(),
-				 rotationAxis.getZ());
-		relativeTranslation.setTranslate(p.getX()-parent.getInitPosition().getX(),
-				p.getY()-parent.getInitPosition().getY(), 
-				p.getZ()-parent.getInitPosition().getZ());
-		
-		
 		/*
 		//phi being the rotation angle and (u,v,w) the rotation (axis) vector
 		double rcos = Math.cos(phi);
@@ -204,7 +196,7 @@ public class Bone {
 		
 	}
 	
-	public Matrix4 getRelativeMatrix(){
+	public Matrix getRelativeMatrix(){
 		return this.relative;
 	}
 	public double getAngle() {
@@ -257,7 +249,7 @@ public class Bone {
 	 * </code></pre>
 	 * Here m[3], m[7] and m[11] = 0.0 and m[15] = 1.0 for affine transforms.
 	 */
-	public Matrix4 getRelativeRotation(){
+	public Matrix getRelativeRotation(){
 		return relativeRotation;	
 	}
 	
@@ -265,11 +257,17 @@ public class Bone {
 		return rotXYZ;
 	}
 	
-	public void setAbsoluteMatrix(Matrix4 absolute) {
-		this.absolute = absolute;
+	public void setAbsoluteMatrix(double[] m){
+		double[][] array = {{m[0], m[4], m[8], m[12]},
+							{m[1], m[5], m[9], m[13]},
+							{m[2], m[6], m[10], m[14]},
+							{m[3], m[7], m[11], m[15]}};
+		
+		this.absolute = new Matrix(array);
+		//System.out.println(Arrays.deepToString(ablolute.getArray()));
 	}
 	
-	public Matrix4 getAbsoluteMatrix(){
+	public Matrix getAbsoluteMatrix(){
 		return this.absolute;
 	}
 

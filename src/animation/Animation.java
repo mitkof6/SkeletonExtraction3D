@@ -1,12 +1,15 @@
 package animation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
 import org.jeom3d.core.Matrix4;
+
+import Jama.Matrix;
 
 import main.Main;
 import math.Triangle;
@@ -62,13 +65,15 @@ public class Animation {
 		Vector<Bone> bones = new Vector<>();
 		getBones(mesh.getRoot(), bones);
 		
+
 		for(Node<Triangle> v: mesh.getVertices()){
 			
+			//System.out.println(v.getInitialPositioln().getX());
 			weightedBones = new HashMap<>();
 			double total = 0;
 			
 			for(int i = 0;i<bones.size();i++){
-				double dist = bones.get(i).getInitPosition().distance(v.getPoint());
+				double dist = bones.get(i).getInitPosition().distance(v.getInitialPositioln());
 				weightedBones.put(dist, bones.get(i));
 				total += dist;
 			}
@@ -76,7 +81,7 @@ public class Animation {
 			List<Double> distance = new ArrayList<Double>(weightedBones.keySet());
 			Collections.sort(distance);
 			
-			System.out.println("Node: "+v.getX()+" "+v.getY()+" "+v.getZ());
+			System.out.println("Node: "+v.getInitialPositioln().getX()+" "+v.getInitialPositioln().getY()+" "+v.getInitialPositioln().getZ());
 			for(int i = 0;i<dependencies;i++){
 				System.out.println("Distance: "+distance.get(i));
 				Bone b = weightedBones.get(distance.get(i));
@@ -87,7 +92,7 @@ public class Animation {
 					break;
 				}else{
 					v.addBoneSkinBinding(new BoneSkinBinding(
-							getBindingMatrix(v, b), 1/dependencies, b));
+							getBindingMatrix(v, b), 1.0/dependencies, b));
 				}
 				
 			}
@@ -102,26 +107,22 @@ public class Animation {
 		}
 	}
 
-	private static Matrix4 getBindingMatrix(Node<Triangle> v, Bone b){
+	private static Matrix getBindingMatrix(Node<Triangle> v, Bone b){
 		//Vector2D v1 = new Vector2D(b.getParent().getAbsolutePosition(),b.getAbsolutePosition());
 		//Vector2D v2 = new Vector2D(b.getAbsolutePosition(), v.getPoint());
 		//double thi = v1.angleBetween(v2);
-		//double thi = 0;
-		double dx = v.getX() - b.getInitPosition().getX();
-		double dy = v.getY() - b.getInitPosition().getY();
-		double dz = v.getZ() - b.getInitPosition().getZ();
+		double thi = 0;
+		double dx = v.getInitialPositioln().getX() - b.getInitPosition().getX();
+		double dy = v.getInitialPositioln().getX() - b.getInitPosition().getX();
+		double dz = v.getInitialPositioln().getX() - b.getInitPosition().getX();
 		//System.out.println("Thi: "+Math.toDegrees(thi));
-		double[] m = {
-						1, 0, 0, 0,
-						0, 1, 0, 0,
-						0, 0, 1, 0,
-						dx, dy, dz, 1};
+		double[][] array = {{Math.cos(thi), Math.sin(thi), 0, dx},
+						{-Math.sin(thi), Math.cos(thi), 0, dy},
+						{0, 0, 1, dz},
+						{0, 0, 0, 1}};
 
-		//System.out.println(Arrays.deepToString(array));
-		//System.out.println(v.getPoint().toString()+" -> "+b.getAbsolutePosition().toString());
-		Matrix4 matrix = new Matrix4(m);
-		System.out.println(matrix.toString());
-		return matrix;
+		System.out.println(Arrays.deepToString(array));
+		return new Matrix(array);
 	}
 
 	public static Bone getInitialPose(){

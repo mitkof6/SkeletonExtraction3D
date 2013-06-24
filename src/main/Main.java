@@ -33,7 +33,7 @@ public class Main {
 	public static double DISTANCE_TOLERANCE = 3;
 	public static double MERGE_TOLERANCE = 2;
 	public static int CHAIN_SIZE_TOLERANCE = 3;
-	public static int SKIN_DEPENDENCIES = 2;
+	public static int SKIN_DEPENDENCIES = 1;
 	/**
 	 * @param args
 	 */
@@ -55,7 +55,7 @@ public class Main {
 		refineSkeleton();
 		
 		//generate skeleton system
-		//generateSkeletonSystem();
+		generateSkeletonSystem();
 		
 		//show model
 		Animator viewer3D = new Animator();

@@ -232,7 +232,7 @@ public class SkeletonExtraction {
 		direction = direction.times(PUSHING_FACTOR);
 		
 		//System.out.println("d: "+direction.getX()+" "+direction.getY()+" "+direction.getZ());
-		Vector3D result = new Vector3D(p.getPoint());
+		Vector3D result = new Vector3D(p.getInitialPositioln());
 		//System.out.println("b :"+result.getX()+" "+result.getY()+" "+result.getZ());
 		result = result.plus(direction);
 		//System.out.println("a: "+result.getX()+" "+result.getY()+" "+result.getZ());
@@ -264,7 +264,8 @@ public class SkeletonExtraction {
 			synchronized (chains) {
 				chains.add(temp);
 			}
-			System.out.println("Node: "+v.getX()+" "+v.getY()+" "+v.getZ()+" Finished");
+			System.out.println("Node: "+v.getInitialPositioln().getX()+" "+v.getInitialPositioln().getY()+" "+
+							v.getInitialPositioln().getZ()+" Finished");
 		}
 	}
 }
