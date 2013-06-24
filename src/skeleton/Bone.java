@@ -5,8 +5,6 @@ import java.util.Vector;
 import math.geom3d.Point3D;
 import math.geom3d.Vector3D;
 
-import org.jeom3d.core.Matrix4;
-
 import Jama.Matrix;
 import animation.KeyFrame;
 
@@ -15,12 +13,7 @@ public class Bone {
 	private Point3D initPosition;
 	private Bone parent;
 	private Vector<Bone> child = new Vector<>();
-	private Matrix 
-			relativeTranslation = Matrix.identity(4, 4),
-			relativeRotation = Matrix.identity(4, 4),
-			absolute = Matrix.identity(4, 4),
-			relative = Matrix.identity(4, 4);
-			//absoluteRotation = Matrix4.identity();
+	private Matrix absolute = Matrix.identity(4, 4);
 	private double length;
 	private double angle;
 	private Vector3D rotXYZ;
@@ -110,6 +103,7 @@ public class Bone {
 		if(rotationAxis.getX()==0&&rotationAxis.getY()==0&&rotationAxis.getZ()==0){
 			rotationAxis = new Vector3D(0, 0, 1);
 		}
+		//TODO
 		//System.out.println("RA: "+rotationAxis.getX()+" "+rotationAxis.getY()+" "+rotationAxis.getZ());
 		//System.out.println("Angle: "+Math.toDegrees(phi));
 		//System.out.println("L: "+length);
@@ -137,7 +131,7 @@ public class Bone {
 		matrix[1][2] = -u * rsin + v*w*(1-rcos);
 		matrix[2][2] =      rcos + w*w*(1-rcos);
 		matrix[3][2] = 0;
-		matrix[0][3] = p.getX()-parent.getInitPosition().getX();//TODO
+		matrix[0][3] = p.getX()-parent.getInitPosition().getX();
 		matrix[1][3] = p.getY()-parent.getInitPosition().getY();
 		matrix[2][3] = p.getZ()-parent.getInitPosition().getZ();
 		matrix[3][3] = 1;
@@ -156,7 +150,7 @@ public class Bone {
 		m[9] = -u * rsin + v*w*(1-rcos);
 		m[10] =      rcos + w*w*(1-rcos);
 		m[11] = 0;
-		m[12] = p.getX()-parent.getInitPosition().getX();//TODO
+		m[12] = p.getX()-parent.getInitPosition().getX();
 		m[13] = p.getY()-parent.getInitPosition().getY();
 		m[14] = p.getZ()-parent.getInitPosition().getZ();
 		m[15] = 1;
@@ -184,7 +178,7 @@ public class Bone {
 		m[9] = -u * rsin + v*w*(1-rcos);
 		m[10] =      rcos + w*w*(1-rcos);
 		m[11] = 0;
-		m[12] = this.length;//TODO
+		m[12] = this.length;
 		m[13] = 0;
 		m[14] = 0;
 		m[15] = 1;
@@ -196,9 +190,6 @@ public class Bone {
 		
 	}
 	
-	public Matrix getRelativeMatrix(){
-		return this.relative;
-	}
 	public double getAngle() {
 		return angle;
 	}
@@ -236,21 +227,6 @@ public class Bone {
 	
 	public Bone getParent(){
 		return this.parent;
-	}
-	
-	/**
-	 * A 4x4 transformation matrix for homogenious coordinates. This matrix is
-	 * opengl compinant.ie. it is column ordered.
-	 * <pre><code>
-	 * m[ 0] m[ 4] m[ 8] m[12]
-	 * m[ 1] m[ 5] m[ 9] m[13]
-	 * m[ 2] m[ 6] m[10] m[14]
-	 * m[ 3] m[ 7] m[11] m[15]
-	 * </code></pre>
-	 * Here m[3], m[7] and m[11] = 0.0 and m[15] = 1.0 for affine transforms.
-	 */
-	public Matrix getRelativeRotation(){
-		return relativeRotation;	
 	}
 	
 	public Vector3D getRotXYZ() {

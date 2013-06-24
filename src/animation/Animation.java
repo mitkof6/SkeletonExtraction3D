@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import org.jeom3d.core.Matrix4;
-
 import Jama.Matrix;
 
 import main.Main;
@@ -68,14 +66,11 @@ public class Animation {
 
 		for(Node<Triangle> v: mesh.getVertices()){
 			
-			//System.out.println(v.getInitialPositioln().getX());
 			weightedBones = new HashMap<>();
-			double total = 0;
 			
 			for(int i = 0;i<bones.size();i++){
 				double dist = bones.get(i).getInitPosition().distance(v.getInitialPositioln());
 				weightedBones.put(dist, bones.get(i));
-				total += dist;
 			}
 			
 			List<Double> distance = new ArrayList<Double>(weightedBones.keySet());
@@ -108,14 +103,11 @@ public class Animation {
 	}
 
 	private static Matrix getBindingMatrix(Node<Triangle> v, Bone b){
-		//Vector2D v1 = new Vector2D(b.getParent().getAbsolutePosition(),b.getAbsolutePosition());
-		//Vector2D v2 = new Vector2D(b.getAbsolutePosition(), v.getPoint());
-		//double thi = v1.angleBetween(v2);
+
 		double thi = 0;
 		double dx = v.getInitialPositioln().getX() - b.getInitPosition().getX();
-		double dy = v.getInitialPositioln().getX() - b.getInitPosition().getX();
-		double dz = v.getInitialPositioln().getX() - b.getInitPosition().getX();
-		//System.out.println("Thi: "+Math.toDegrees(thi));
+		double dy = v.getInitialPositioln().getY() - b.getInitPosition().getY();
+		double dz = v.getInitialPositioln().getZ() - b.getInitPosition().getZ();
 		double[][] array = {{Math.cos(thi), Math.sin(thi), 0, dx},
 						{-Math.sin(thi), Math.cos(thi), 0, dy},
 						{0, 0, 1, dz},

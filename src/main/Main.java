@@ -26,14 +26,14 @@ public class Main {
 	public static Vector<Chain> chains;
 	public static Bone root;
 	
-	public static int PUSHING_FACTOR = 1;
-	public static int ITERATIONS = 40;
+	public static int PUSHING_FACTOR = 1;//how much a point is pushed towards the inner of S
+	public static int ITERATIONS = 40;//depth of search for local minimum
 	public static int STEP = 10;
 	public static int SAMPLING = 6;
-	public static double DISTANCE_TOLERANCE = 3;
-	public static double MERGE_TOLERANCE = 2;
-	public static int CHAIN_SIZE_TOLERANCE = 3;
-	public static int SKIN_DEPENDENCIES = 1;
+	public static double DISTANCE_TOLERANCE = 2;
+	public static double MERGE_TOLERANCE = 5;
+	public static int CHAIN_SIZE_TOLERANCE = 2;
+	public static int SKIN_DEPENDENCIES = 3;//skin attachments #
 	/**
 	 * @param args
 	 */
@@ -47,6 +47,8 @@ public class Main {
 		loadModel("obj/cube.obj");
 		//b66_L2.obj
 		//cube.obj
+		
+		defineNormals();
 		
 		//generate skeleton
 		generateSkeleton();
@@ -76,6 +78,10 @@ public class Main {
 				" vertices-"+vertices.size());
 	}
 	
+	
+	private static void defineNormals(){
+		
+	}
 	private static void generateSkeleton(){
 		
 		SkeletonExtraction skeletonExtraction = new SkeletonExtraction(triangles, PUSHING_FACTOR,

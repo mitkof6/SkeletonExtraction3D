@@ -9,7 +9,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Vector;
 
 
@@ -21,9 +20,6 @@ import javax.media.opengl.GLProfile;
 import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.glu.GLU;
 
-import org.jeom3d.core.Matrix4;
-import org.jeom3d.core.Vector4;
-
 import skeleton.Bone;
 import skeleton.BoneFunction;
 import skeleton.Node;
@@ -33,9 +29,6 @@ import main.Main;
 import math.Triangle;
 import math.geom3d.Point3D;
 import math.geom3d.Vector3D;
-
-
-import Jama.Matrix;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -56,8 +49,6 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	private GL2 gl;
 
 	//data
-	private Vector<Triangle> triangles;
-	//private Bone root;
 	private Mesh mesh;
 	
 	//bone selection
@@ -67,7 +58,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	private double angleOffset = 0.1;
 	
 	//movements
-	private float zoom = 15.f;
+	private float zoom = 15f;
     private float rotX = 45.f;
     private float rotY = 0.001f;
     private float tX = 0.f;
@@ -76,15 +67,15 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
     private int lastY = 0;
 
     //animation
-    private int keyFrameIndex = 0, FPS = 1, time;
+    private int keyFrameIndex = 0, FPS = 30, time;
     private boolean animationFlag = false;
     
     //weights
     private boolean weightInit = false;
     
     //camera
-	private int DISTANCE = 50;
-
+    private int CX = 10, CY = 10, CZ = -50;
+    
 	public Animator(){
 
 		super("Animator");
@@ -101,10 +92,9 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		});
 
 		//get data
-		triangles = Main.triangles;
-		//Bone root = Main.root;
+		Bone root = Main.root;
 		//
-		
+		/*
 		Bone root;
 		root = new Bone(new Point3D(0,0,0), null);
 		root.setBonesCount(7);
@@ -122,7 +112,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		root.getChild().get(1).getChild().get(0).setName(6);
 		root.getChild().get(2).addChild(new Point3D(-10,-10,10));
 		root.getChild().get(2).getChild().get(0).setName(7);
-		
+		*/
 		mesh = new Mesh(Main.vertices, root);
 		
 
@@ -170,13 +160,11 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		gl.glHint(GL2.GL_PERSPECTIVE_CORRECTION_HINT, GL2.GL_NICEST);
 
 		//set camera
-		setCamera(gl, glu, DISTANCE);	
+		setCamera(gl, glu, CY, CY, CZ);	
 	}
 
 	@Override
-	public void dispose(GLAutoDrawable drawable) {
-
-	}
+	public void dispose(GLAutoDrawable drawable) {}
 
 	@Override
 	public void display(GLAutoDrawable drawable) {
@@ -193,6 +181,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 				//root = Animation.getInitialPose();
 			}
 		}
+		updateSkin();
 	}
 
 	@Override
@@ -213,77 +202,46 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		//rotate
 		gl.glLoadIdentity();
 
-		/*
-		//movements
-        gl.glTranslatef(0, 0, -zoom);
-        gl.glTranslatef(tX, tY, 0);
-        gl.glRotatef(rotX, 1, 0, 0);
-        gl.glRotatef(rotY, 0, 1, 0);
-		 */
-        setCamera(gl, glu, DISTANCE);
-        
+		//gl.glTranslatef(0, 0, -zoom);
+        //gl.glTranslatef(tX, tY, 0);
+
+		//gl.glRotatef(rotX, 1, 0, 0);
+        //gl.glRotatef(rotY, 0, 1, 0);
         
         //draw bone system
       	drawBone(mesh.getRoot(), gl);
 
-      	updateSkin();
-      	
+      	//draw skin
       	gl.glColor3d(1, 0, 0);
       	drawSkin(gl);
       		
+      	//draw axis and grid
         drawAxis(gl);
-        drawGrid(10, gl);
-	
-        
+        drawGrid(100, gl);
         
 		gl.glFlush();
 	}
 	
 	private void updateSkin(){
-		System.out.println();
+		//System.out.println();
 		for(Node<Triangle> v: mesh.getVertices()){
 			ArrayList<BoneSkinBinding> bindings = v.getBoneSkinBindings();
 			double x = 0, y = 0, z = 0;
-			Matrix result;
-			Vector4 vector;
-			double[] m;
 			for(BoneSkinBinding b: bindings){
-				result = b.getBind().times(b.getBone().getAbsoluteMatrix());
-				System.out.println(Arrays.deepToString(result.getArray()));
-				result = result.times(new Matrix(new double[]{
-								0, 
-								0, 
-								0,
-								1},1).transpose());
-				
-				result = result.times(b.getWeight());
-				
-				x += result.get(0, 0);
-				y += result.get(1, 0);
-				z += result.get(2, 0);
-				
-				/*
-				result = b.getBone().getAbsoluteMatrix().times(b.getBind());
 
-				System.out.println(b.getWeight());
+				Vector3D pos = new Vector3D(
+								b.getBind().get(0, 3)+b.getBone().getAbsoluteMatrix().get(0, 3),
+								b.getBind().get(1, 3)+b.getBone().getAbsoluteMatrix().get(1, 3),
+								b.getBind().get(2, 3)+b.getBone().getAbsoluteMatrix().get(2, 3));
+				x += pos.getX()*b.getWeight();
+				y += pos.getY()*b.getWeight();
+				z += pos.getZ()*b.getWeight();
 				
-				System.out.println(result.toString());
-				if(b.getBind().m[12]!=0&&b.getBind().m[12]!=0&&b.getBind().m[12]!=0){
-					vector = result.timesTranspose(new Vector4(v.getInitialPositioln().getX(),
-									v.getInitialPositioln().getY(),
-									v.getInitialPositioln().getZ(), 1));
-				}else{
-					vector = new Vector4(result.m[12], result.m[13], result.m[14], 1);
-				}
 				
-				x += vector.x*b.getWeight();
-				y += vector.y*b.getWeight();
-				z += vector.z*b.getWeight();
-				*/
 			}
-			System.out.println("x: "+x+"y :"+y+"z: "+z);
+			//System.out.println("x: "+x+"y :"+y+"z: "+z);
 			
-			/*
+			
 			for(Triangle t: v.getAttachedTriangles()){
 				if(t.getA().equals(v.getNewPosition())){
 					t.setA(new Point3D(x, y, z));
@@ -292,13 +250,12 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 				}else if(t.getC().equals(v.getNewPosition())){
 					t.setC(new Point3D(x, y, z));
 				}
+				System.out.println(t.getA().getX()+" "+t.getA().getY()+" "+t.getA().getZ());
+				System.out.println(t.getB().getX()+" "+t.getB().getY()+" "+t.getB().getZ());
+				System.out.println(t.getC().getX()+" "+t.getC().getY()+" "+t.getC().getZ());
 			}
+			System.out.println();
 			v.setNewPosition(x, y, z);
-			*/
-			
-			
-			//System.out.println(v.getPosition().getX()+" "+v.getPosition().getY()+" "+v.getPosition().getZ());
-			
 		}
 		
 	}
@@ -306,8 +263,6 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	
 	private void drawAxis(GL2 gl) {
 
-		gl.glPushMatrix();
-		
         gl.glLineWidth(4.f);
         gl.glBegin(GL2.GL_LINES);
         gl.glColor3f(1.f, 0.f, 0.f);
@@ -323,12 +278,9 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
         gl.glVertex3f(0.f, 0.f, 1.f);
         gl.glEnd();
         
-        gl.glPopMatrix();
     }
 
     private void drawGrid(int size, GL2 gl) {
-    	
-    	gl.glPushMatrix();
     	
         gl.glColor3f(0.5f, 0.5f, 0.5f);
         gl.glLineWidth(1.f);
@@ -342,33 +294,10 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
         }
         gl.glEnd();
         
-        gl.glPopMatrix();
     }
     
 	private void drawSkin(GL2 gl){
-		gl.glPushMatrix();
-		
-		
-		/*
-	    gl.glBegin(GL2.GL_TRIANGLES);
-	    for(Triangle t : triangle){
-	    	gl.glVertex3d(t.getA().getX(), t.getA().getY(), t.getA().getZ());
-	    	gl.glVertex3d(t.getB().getX(), t.getB().getY(), t.getB().getZ());
-	    	gl.glVertex3d(t.getC().getX(), t.getC().getY(), t.getC().getZ());
-	    }
-	    gl.glEnd();
-		 */
-
-		/*
-		
-		for(Triangle t : triangles){
-			gl.glBegin(GL2.GL_LINE_STRIP);
-			gl.glVertex3d(t.getA().getX(), t.getA().getY(), t.getA().getZ());
-			gl.glVertex3d(t.getB().getX(), t.getB().getY(), t.getB().getZ());
-			gl.glVertex3d(t.getC().getX(), t.getC().getY(), t.getC().getZ());
-			gl.glEnd();
-		}
-		*/
+		//gl.glPushMatrix();
 		
 		for(Node<Triangle> v: mesh.getVertices()){
 			
@@ -380,7 +309,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 				gl.glEnd();
 			}
 		}
-		gl.glPopMatrix();
+		//gl.glPopMatrix();
 	}
 	
 	private void drawBone(Bone bone, GL2 gl){
@@ -423,7 +352,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		
 		gl.glTranslated(bone.getLength(), 0, 0);	
 		
-		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, m, 0);//GL_MODELVIEW_MATRIX
+		gl.glGetDoublev(GL2.GL_MODELVIEW_MATRIX, m, 0);
 		bone.setAbsoluteMatrix(m);
 		//System.out.println(bone.getAbsoluteMatrix().toString());
 		//System.out.println(m[12]+" "+m[13]+" "+m[14]);
@@ -434,7 +363,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		gl.glPopMatrix();
 
 	}
-	private void setCamera(GL2 gl, GLU glu, float distance) {
+	private void setCamera(GL2 gl, GLU glu, double cX, double cY, double cZ) {
 		// Change to projection matrix.
 		gl.glMatrixMode(GL2.GL_PROJECTION);
 		gl.glLoadIdentity();
@@ -443,7 +372,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 		float widthHeightRatio = (float) getWidth() / (float) getHeight();
 		glu.gluPerspective(45, widthHeightRatio, 1, 1000);
 
-		glu.gluLookAt(this.rotX, this.rotY, -zoom, 0, 0, 0, 0, 1, 0);
+		glu.gluLookAt(cX, cY, cZ, 0, 0, 0, 0, 1, 0);
 		
 		// Change back to model view matrix.
 		gl.glMatrixMode(GL2.GL_MODELVIEW);
@@ -501,13 +430,13 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
          }
 
-         if ((e.getModifiers() & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK) {
+         if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) == MouseEvent.BUTTON3_MASK) {
              tX += 0.05f * diffx;
              tY -= 0.05f * diffy;
 
          }
 
-         if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) == MouseEvent.BUTTON3_MASK) {
+         if ((e.getModifiers() & MouseEvent.BUTTON2_MASK) == MouseEvent.BUTTON2_MASK) {
              zoom -= 0.05f * diffx;
          }	
 	}
