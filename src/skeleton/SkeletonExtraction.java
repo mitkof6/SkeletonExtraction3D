@@ -24,6 +24,8 @@ public class SkeletonExtraction {
 	 */
 	private static final double C_INF = 0.000001;
 	
+	private static final int WORKERS_NUMBER = 20;
+	
 	private final int PUSHING_FACTOR;
 	private final int ITERATIONS;
 	private final int STEP;
@@ -90,7 +92,7 @@ public class SkeletonExtraction {
 		System.out.println("Prossesing skeleton workers please wait..");
 		
 		//pool of threads for better performance
-		ExecutorService executor = Executors.newFixedThreadPool(vertices.size()/2);
+		ExecutorService executor = Executors.newFixedThreadPool(WORKERS_NUMBER);
 		
 		for(Node v : vertices){
 			//System.out.println("Node: "+v.getX()+" "+v.getY()+" "+v.getZ());
