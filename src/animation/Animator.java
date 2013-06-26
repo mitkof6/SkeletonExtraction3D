@@ -122,7 +122,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 
 		//get data
 		faces = Main.faces;
-		mesh = Animation.getInitialPose();
+		mesh = AnimationFunction.getInitialPose();
 		
 
 		//profile init
@@ -173,15 +173,15 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 	public void display(GLAutoDrawable drawable) {
 		render(drawable);
 		if(weightInit==false){//init bones-skin bindings
-			Animation.initializeSkinBoneRelation(mesh, Main.SKIN_DEPENDENCIES);
+			AnimationFunction.initializeSkinBoneRelation(mesh, Main.SKIN_DEPENDENCIES);
 			weightInit = true;
 		}
 		if(animationFlag){//animation
-			Animation.interpolate(mesh.getRoot(), time);
+			AnimationFunction.interpolate(mesh.getRoot(), time);
 			time++;
 			if(time==mesh.getRoot().getKeyFrameSize()*FPS){
 				time = 0;
-				mesh = Animation.getInitialPose();
+				mesh = AnimationFunction.getInitialPose();
 				weightInit = false;
 			}
 		}
@@ -412,7 +412,7 @@ public class Animator extends Frame implements GLEventListener, KeyListener,
 				result.setAngle(result.getAngle()-angleOffset);
 			}
 		}else if(e.getKeyCode()==KeyEvent.VK_R){
-			Animation.recordKeyFrame(mesh.getRoot(), keyFrameIndex);
+			AnimationFunction.recordKeyFrame(mesh.getRoot(), keyFrameIndex);
 			keyFrameIndex += FPS;
 		}else if(e.getKeyCode()==KeyEvent.VK_A){
 			time = 0;

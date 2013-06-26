@@ -17,7 +17,7 @@ import skeleton.Node;
  * 
  * @author Jim Stanev
  */
-public class Animation {
+public class AnimationFunction {
 	
 	/**
 	 * used to find minimum distanced bones
