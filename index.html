@@ -38,38 +38,6 @@
 
 <p>Author: Jim Stanev</p>
 
-<h1>
-<a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h1>
-
-<p>Language: Java</p>
-
-<p>This program opens a obj (Wavefront) format model and extracts its skeleton with visible repulsive force algorithm.
-Then it constructs a hierarchy structure of the bone system from the refined skeleton. Also interaction can be made
-to create a simple animation, where you interact with the skeleton and the skin of the model moves accordingly with
-the movement of the skeleton (linear blend skinning).</p>
-
-<h1>
-<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
-
-<p>Just run the jar file in dist folder.</p>
-
-<pre><code>java -jar SkeletonExtraction3D.jar
-</code></pre>
-
-<p>If there is a error, it will pop on the info screen. Maybe you need to add the jogl-nativ-[Operation-system].jar 
-that corespond to your operating system.</p>
-
-<h1>
-<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h1>
-
-<p>Java library dependencies:</p>
-
-<ul>
-<li>JOGL opengl for Java</li>
-<li>JAMA matrix operation</li>
-<li>Java3D</li>
-<li>JavaGeom</li>
-</ul><h1>
 <a name="" class="anchor" href="#"><span class="octicon octicon-link"></span></a>Περιγραφή</h1>
 
 <p>Σε αυτή την εργασία υλοποιείται σκελετοποίηση σε τρισδιάστατα και δισδιάστατα μοντέλα με χρήση ενός αλγορίθμου και αφού εξαχθεί ο σκελετός γίνεται κάποιο στοιχειώδες animation, όπου κινείται ο σκελετός και το δέρμα του μοντέλου ακολουθεί την κίνηση του.</p>
@@ -135,6 +103,8 @@ that corespond to your operating system.</p>
 <p>Όπου vi είναι το visible set και x είναι το σημείο που εξετάζουμε. Η συνάρτηση f είναι η 1/x2 και περνάμε σαν όρισμα την δεύτερη Ευκλείδεια νόρμα. Για να καταλάβουμε πως δουλεύει πρέπει να προσέξουμε ότι το vrf είναι διάνυσμα που αθροίζει διανύσματα (vi-x) και τα πολλαπλασιάζει με μία βαθμωτή ποσότητα που παίζει το ρόλο της επιρροής αυτού του διανύσματος στην συνολική κατεύθυνση.</p>
 
 <p>Αφού έχει γίνει η σκελετοποίηση έχουμε ένα σύνολο από σημεία τα οποία ακλούθησε ένα σημείο του σκελετού για να φτάσει στο σημείο ισορροπίας. Αυτό δεν μας κάνει οπότε πρέπει να γίνει κάποιο φιλτράρισμα. Παρακάτω φαίνεται το αποτέλεσμα αν δεν γίνει κάποιο φιλτράρισμα και αραίωμα των σημείων. Επίσης παρατηρούμε ότι οι αλυσίδες δεν είναι ενωμένες. Το τελευταίο θα το αντιμετωπίσουμε με την χρήση θεωρία γράφων και τον αλγόριθμο για την εύρεση minimum spanning tree.</p>
+
+<img src="https://www.dropbox.com/s/zvrfug9s6r0gt4u/1.png" alt="Σχήμα 1: Αριστερά φαίνεται η δειγματοληψία του χώρου και ο υπολογισμός του vrf που δείχνει την κατεύθυνση. Δεξιά φαίνετε η σύγκληση στο σημείο ισορροπίας."> 
 
 <p>Αυτό που μπορούμε να κάνουμε για να βελτιώσουμε τον σκελετό είναι να:</p>
 
