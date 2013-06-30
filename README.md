@@ -20,7 +20,7 @@ Installation
 
 Just run the jar file in dist folder.
 
-  java -jar SkeletonExtraction3D.jar
+    java -jar SkeletonExtraction3D.jar
   
 If there is a error, it will pop on the info screen. Maybe you need to add the jogl-nativ-[Operation-system].jar 
 that corespond to your operating system.
@@ -30,7 +30,10 @@ Dependencies
 
 Java library dependencies:
 
---JOGL opengl for Java
---JAMA matrix operation
---Java3D
---JavaGeom
+-JOGL opengl for Java
+
+-JAMA matrix operation
+
+-Java3D
+
+-JavaGeom
