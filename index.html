@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Skeletonextraction3D : Skeleton extruction 3D using Visible Repulsive Force and animation" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Skeletonextraction3D</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/mitkof6/SkeletonExtraction3D">View on GitHub</a>
+
+          <h1 id="project_title">Skeletonextraction3D</h1>
+          <h2 id="project_tagline">Skeleton extruction 3D using Visible Repulsive Force and animation</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/mitkof6/SkeletonExtraction3D/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/mitkof6/SkeletonExtraction3D/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="skeletonextraction3d" class="anchor" href="#skeletonextraction3d"><span class="octicon octicon-link"></span></a>SkeletonExtraction3D</h1>
+
+<p>Skeleton extruction 3D using Visible Repulsive Force and animation</p>
+
+<p>Author: Jim Stanev</p>
+
+<h1>
+<a name="description" class="anchor" href="#description"><span class="octicon octicon-link"></span></a>Description</h1>
+
+<p>Language: Java</p>
+
+<p>This program opens a obj (Wavefront) format model and extracts its skeleton with visible repulsive force algorithm.
+Then it constructs a hierarchy structure of the bone system from the refined skeleton. Also interaction can be made
+to create a simple animation, where you interact with the skeleton and the skin of the model moves accordingly with
+the movement of the skeleton (linear blend skinning).</p>
+
+<h1>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
+
+<p>Just run the jar file in dist folder.</p>
+
+<pre><code>java -jar SkeletonExtraction3D.jar
+</code></pre>
+
+<p>If there is a error, it will pop on the info screen. Maybe you need to add the jogl-nativ-[Operation-system].jar 
+that corespond to your operating system.</p>
+
+<h1>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h1>
+
+<p>Java library dependencies:</p>
+
+<ul>
+<li>JOGL opengl for Java</li>
+<li>JAMA matrix operation</li>
+<li>Java3D</li>
+<li>JavaGeom</li>
+</ul><h1>
+<a name="" class="anchor" href="#"><span class="octicon octicon-link"></span></a>Περιγραφή</h1>
+
+<p>Σε αυτή την εργασία υλοποιείται σκελετοποίηση σε τρισδιάστατα και δισδιάστατα μοντέλα με χρήση ενός αλγορίθμου και αφού εξαχθεί ο σκελετός γίνεται κάποιο στοιχειώδες animation, όπου κινείται ο σκελετός και το δέρμα του μοντέλου ακολουθεί την κίνηση του.</p>
+
+<h1>
+<a name="-1" class="anchor" href="#-1"><span class="octicon octicon-link"></span></a>Προδιαγραφές</h1>
+
+<p>Τα προγράμματα είναι γραμμένα σε Java και για την εκτέλεση τους απαιτείται η εγκατάσταση του jre το οποίο μπορείτε να το κατεβάσετε από το site της Oracle <a href="http://www.oracle.com/technetwork/java/javase/downloads/index.html">http://www.oracle.com/technetwork/java/javase/downloads/index.html</a>. Όσο αφορά τις επιπρόσθετες βιβλιοθήκες που απαιτούνται έχουν συμπεριλήφθη δίπλα στο εκτελέσιμο σε φάκελο lib μέσα στο dist. Ενδεικτικά αναφέρεται ποιες βιβλιοθήκες χρησιμοποιήθηκαν:</p>
+
+<ul>
+<li>2D Project</li>
+<li>JOGL (opengl Java)</li>
+<li>Jama για πράξεις με πίνακες</li>
+<li>3D Project</li>
+<li>JOGL (opengl Java)</li>
+<li>Jama για πράξεις με πίνακες</li>
+<li>Java3D (3Δ γεωμετρικά αντικείμενα)</li>
+<li>JavaGeom (3Δ γεωμετρικά αντικείμενα)</li>
+</ul><p>Για το 2Δ υλοποιήθηκαν τα απαραίτητα primitives (line point vector etc). Για το 3Δ παρθήκαν έτοιμα από γεωμετρικές βιβλιοθήκες, αλλά δεν θα ήταν δύσκολη η υλοποίηση.
+Το project έχει την εξής δομή:</p>
+
+<ul>
+<li>src </li>
+<li>bin</li>
+<li>dist εκτελέσιμο</li>
+<li>doc java docs που επεξηγούν τις κλάσεις και τις μεθόδους, αλλά και τα πεδία</li>
+</ul><p>Σε περίπτωση που δεν ξεκινήσει το animation στο info screen θα εμφανισθεί σφάλμα. Πιθανόν θα ευθύνεται το γεγονός ότι στο lib φάκελο δεν περιέχεται το αντίστοιχο jar για την jogl που υποστηρίζει το λειτουργικό και συγκεκριμένα (gluegen-rt-natives-windows-i586 και jogl-all-natives-windows-i586). Σε τέτοια περίπτωση παρακαλώ κατεβάστε την jogl και αντιγράψτε το αντίστοιχο jar στο φάκελο lib. Για να μην υπάρχει πρόβλημα έχουν ενσωματωθεί τα jar για να υποστηρίξουν τις εξής διανομές:</p>
+
+<ul>
+<li>Windows i586</li>
+<li>Windows amd64</li>
+<li>Linux i586</li>
+<li>Linux amd64</li>
+</ul><h1>
+<a name="-2" class="anchor" href="#-2"><span class="octicon octicon-link"></span></a>Ανάπτυξη</h1>
+
+<p>Εδώ θα περιγράψουμε την διαδικασία ανάπτυξης της εφαρμογής και τα βήματα. Αρχικά δημιουργηθήκαν οι απαραίτητες κλάσεις που αφορούν το άνοιγμα του obj file, το οποίο έχει μια συγκεκριμένη δομή. </p>
+
+<p>Αφού ορτώσουμε το αρχείο έχουμε στην διάθεση μας τις συντεταγμένες του μοντέλου και την σειρά με την οποία φτιάχνουν το περίβλημα. Για να μπορέσουμε να εργαστούμε δημιουργήθηκαν κλάσεις που διαχειρίζονται τα σημεία και αποτυπώνουν το μοντέλο είτε με JOGL είτε με Java Graphics.</p>
+
+<p>Το επόμενο βήμα είναι να εξάγουμε τον σκελετό από το μοντέλο. Ο αλγόριθμος που υλοποιήθηκε είναι γενικός και δουλεύει με το ίδιο τρόπο και στο 2Δ και στο 3Δ. </p>
+
+<p>Αφού γίνει κάποια σκελετοποίηση πρέπει να φιλτραριστεί το αποτέλεσμα και να εξαχθεί σε κάποια δομή που να μπορεί να προσπελάζεται εύκολα.</p>
+
+<p>Έπειτα γίνεται η συσχέτιση του δέρματος με το σκελετό έτσι ώστε να μπορούμε να προσδίδουμε κίνηση στον σκελετό και το δέρμα να την ακολουθεί χωρίς να χιάζεται να υπολογίζονται ξεχωριστά οι καινούργιες θέσεις των σημείων.</p>
+
+<p>Υλοποιήθηκαν οι κατάλληλες δομές για animation όπως είναι το keyframe και δημιουργήθηκες εύκολος τρόπος προσπέλασης των οστών του σκελετού με το πληκτρολόγιο και η περιστροφή τους σε σχέση με τον πατέρα τους. Επίσης δημιουργήθηκε η δυνατότητα της άμεσης καταγραφής ενός pose και τέλος αφού έχουν καταγραφεί κάποια pose με το πάτημα του πληκτρολογίου γίνεται το animation. Αφού τελειώσει το animation γίνεται επανεκκίνηση του αρχικού pose και η διαδικασία επαναλαμβάνεται μέχρι να διακοπεί το animation  με το πληκτρολόγιο.</p>
+
+<h1>
+<a name="-3" class="anchor" href="#-3"><span class="octicon octicon-link"></span></a>Σκελετοποίηση</h1>
+
+<p>Θεωρητικά είναι το δυσκολότερο κομμάτι του project. Με λίγα λόγιο αυτό που κάνουμε είναι:</p>
+
+<ol>
+<li>Για κάθε σημείο του δέρματος</li>
+<li>Πάρε ένα σημείο και ώθησε το προς το εσωτερικό του όγκου</li>
+<li>Υπολόγισε το Visible set</li>
+<li>Βρες την κατεύθυνση που να σε κατευθύνει προς το ελάχιστο σημείο ισορροπίας για το δεδομένο Visible set και προχώρα</li>
+<li>Ξανά στο βήμα 3 με τις καινούργιες συντεταγμένες έως βρω ολικό ελάχιστο</li>
+<li>Μαζεύω τα σημεία σε ένα μια λίστα που θα την επεξεργαστώ αργότερα και θα φιλτράρω το αποτέλεσμα</li>
+</ol><p>Η μέθοδος λέγεται visible repulsive force [1]. Το visible set είναι ένα set με σημεία που ανήκουν στην επιφάνεια και είναι ορατά στο σημείο που εξετάζουμε. Το διάνυσμα που μας δίνει την κατεύθυνση υπολογίζεται με τον εξής τρόπο:</p>
+
+<p>Όπου vi είναι το visible set και x είναι το σημείο που εξετάζουμε. Η συνάρτηση f είναι η 1/x2 και περνάμε σαν όρισμα την δεύτερη Ευκλείδεια νόρμα. Για να καταλάβουμε πως δουλεύει πρέπει να προσέξουμε ότι το vrf είναι διάνυσμα που αθροίζει διανύσματα (vi-x) και τα πολλαπλασιάζει με μία βαθμωτή ποσότητα που παίζει το ρόλο της επιρροής αυτού του διανύσματος στην συνολική κατεύθυνση.</p>
+
+<p>Αφού έχει γίνει η σκελετοποίηση έχουμε ένα σύνολο από σημεία τα οποία ακλούθησε ένα σημείο του σκελετού για να φτάσει στο σημείο ισορροπίας. Αυτό δεν μας κάνει οπότε πρέπει να γίνει κάποιο φιλτράρισμα. Παρακάτω φαίνεται το αποτέλεσμα αν δεν γίνει κάποιο φιλτράρισμα και αραίωμα των σημείων. Επίσης παρατηρούμε ότι οι αλυσίδες δεν είναι ενωμένες. Το τελευταίο θα το αντιμετωπίσουμε με την χρήση θεωρία γράφων και τον αλγόριθμο για την εύρεση minimum spanning tree.</p>
+
+<p>Αυτό που μπορούμε να κάνουμε για να βελτιώσουμε τον σκελετό είναι να:</p>
+
+<ul>
+<li>Αραιώσουμε τα δείγματα (sampling factor)</li>
+<li>Να βάλουμε ένα threshold που αν υπάρχει κάποιο σημείο στην γειτονία να συγχωνευόμαστε. (distance tolerance)</li>
+<li>Να ενώσουμε τις αλυσίδες με minimum spanning tree αφού βρούμε τους υποψήφιους root κόμβους.</li>
+<li>Και άλλα κόλπα.</li>
+</ul><h1>
+<a name="--" class="anchor" href="#--"><span class="octicon octicon-link"></span></a>Δημιουργία δομή δέντρου</h1>
+
+<p>Το επόμενο βήμα είναι να εξαχθεί ο σκελετός σε προσπελάσιμη δομή όπως είναι το δέντρο, όπου θα επιλέξουμε αυθαίρετα έναν από τους υποψήφιους root κόμβους και θα τον βάλουμε σαν ρίζα στο δέντρο και με διαδοχικές προσπελάσεις θα εισαχθούν τα παιδιά με τα οποία συνδέεται. Η δομή αυτή μας βοηθάει στο animation όπως θα δούμε αργότερα.</p>
+
+<p>Κάθε κόμβος του δέντρου περιέχει τις εξής πληροφορίες:</p>
+
+<ul>
+<li>Αρχικές συντεταγμένες (όχι και πολύ χρήσιμες στο animation αλλά χρήσιμες για άλλους λόγους)</li>
+<li>Μήκος οστού σε σχέση με τον πατέρα</li>
+<li>Δείκτη στον πατέρα</li>
+<li>Λίστα με τα παιδιά</li>
+<li>Λίστα με Keyframes (για το animation)</li>
+<li>Σχετική γωνία με τον πατέρα</li>
+</ul><h1>
+<a name="-4" class="anchor" href="#-4"><span class="octicon octicon-link"></span></a>Κίνηση</h1>
+
+<p>Ο λόγος που επιλέξαμε την δομή δέντρου είναι για να μπορούμε εύκολα αν δώσουμε κίνηση σε ένα οστό να μεταδοθεί αυτόματα και στα παιδιά του οστού. Ο τρόπος με τον οποίο δίνουμε κίνηση είναι με την χρήση των σχετικών γωνιών μεταξύ πατέρα και παιδί. Αλλάζοντας την γωνία περιστρέφουμε το κόκαλο περιστρέφεται ως προς τον πατέρα του. Επίσης θα μπορούσαμε να παίξουμε κε με το μήκος του οστού.</p>
+
+<p>Για να διευκολυνθούμε δημιουργηθήκαν κάποιοι μηχανισμοί εντοπισμού ενός οστού και ο κατάλληλος χρωματισμός του για να φαίνεται ότι είναι επιλεγμένο. Η εναλλαγή των οστών γίνεται με το πληκτρολόγιο. Επίσης δόθηκε η δυνατότητα να αλλάζουμε την γωνία του οστού με αποτέλεσμα να δημιουργούμε περιστροφές.</p>
+
+<h1>
+<a name="keyframe" class="anchor" href="#keyframe"><span class="octicon octicon-link"></span></a>Keyframe</h1>
+
+<p>Για να μπορέσουμε να δώσουμε κίνηση στο σκελετό πρέπει με κάποιον τρόπο να αποθηκεύσουμε τις σχετικές παραμέτρους όλων των οστών για δεδομένη χρονική στιγμή. Για τον σκοπό αυτό δημιουργήθηκε η keyframe κλάση η οποία αποθηκεύεται στο κόκαλο. Μια σειρά από key frames δίνει μια κίνηση.</p>
+
+<p>Για να έχουμε ομαλό αποτέλεσμα αν ένα κόκαλο βρίσκεται σε μια θέση με μια γωνία α και στο επόμενο key frame βρίσκεται σε μια θέση με μια γωνία β τότε μπορούμε να δημιουργήσουμε ενδιάμεσα keyframes που δεν αποθηκεύονται κάπου αλλά αναπαριστούν την ενδιάμεση θέση του οστού μεταξύ δυο key frames και με βάση το FPS να υπολογίζουμε το βήμα που πρέπει να κουνάμε τον σκελετό για να φτάσουμε στο σημείο β μέσα στο συγκεκριμένο διάστημα.</p>
+
+<p>Για να υπολογίσουμε την γωνία με την οποία μετακινούμαστε μπορούμε να κάνουμε απλή γραμμική παλινδρόμηση για παράδειγμα:</p>
+
+<p>Αν έχουμε γωνία α = 0 για t = 0 και γωνία α = 180 για t = 10 και δουλεύουμε με 12fps τότε το βήμα μας είναι:
+(180 - 0) / (10 * 12 - 0 * 12) = 180 / 120 = 1.5°
+Οπότε όσο time &lt;10 θα προσθέτουμε 1.5 στην γωνιά.</p>
+
+<h1>
+<a name="skinning" class="anchor" href="#skinning"><span class="octicon octicon-link"></span></a>Skinning</h1>
+
+<p>Το skinning είναι ένα δύσκολο κομμάτι. Αυτό που κάναμε σε αυτό το project λέγετε liner blend skinning. Η διαδικασία που ακολουθήσαμε είναι να εντοπίζουμε τα πιο κοντινά οστά από το σημείο του δέρματος δίνοντας σαν είσοδο τον αριθμό εξαρτήσεων που μπορεί να έχει ένα σημείο. Αφού γίνει ο εντοπισμός πρέπει να υπολογιστούν κάποιοι παράμετροι που μετασχηματίζουν το σημείο του δέρματος στο σύστημα συντεταγμένων του κάθε οστό που συσχετίζεται και με χρήση κάποιων βαρών και τον απόλυτο πίνακα μετασχηματισμού του κάθε οστού να υπολογίζεται η καινούργια θέση του δέρματος.</p>
+
+<p>Στατιστικές μελέτες έχουν δείξει πως δεν χρειάζεται να προσκολλούμε πολλά οστά σε ένα σημείο του δέρματος αλλά ο βέλτιστος αριθμός είναι γύρο στο 3.</p>
+
+<p>Με βάση την θεωρία μπορούμε να υπολογίσουμε την νέα θέση του σημείου του δέρματος από τον εξής τύπο:</p>
+
+<p>v^'= ∑_dependencies▒〖w_i*M_i*B_i^(-1)*v〗</p>
+
+<p>Όπου:</p>
+
+<ul>
+<li>v είναι το διάνυσμα συντεταγμένων του δέρματος στο αρχικό pose</li>
+<li>Ο Β είναι ο ομογενής πίνακας που συσχετίζει το ακραίο σημείο του οστού με το σημείο του δέρματος</li>
+<li>Ο Μ είναι ο απόλυτος ομογενής πίνακας του οστού</li>
+<li>Το w είναι το αντίστοιχο βάρος (δείκτης επιρροής)</li>
+</ul><p>Για να μην έχουμε παραμόρφωση πρέπει το άθροισμα των w να είναι 1.</p>
+
+<p>Τον Μ πίνακα μπορούμε να τον υπολογίσουμε από τον διαδοχικό πολλαπλασιασμό των σχετικών πινάκων για να φτάσουμε από την ρίζα στο αντίστοιχο οστό, αλλά ευτυχώς η opengl μας δίνει την δυνατότητα να πάρουμε τον πίνακα που έχει στο stack ο οποίος κάθε στιγμή είναι ο απόλυτος πίνακας και να τον αποθηκεύσουμε στο αντίστοιχο bone. Οπότε όσο ζωγραφίζουμε το σκελετό αποθηκεύουμε και τον νέο πίνακα κάθε φορά για να ήμαστε ενήμερη για την νέα θέση.</p>
+
+<h1>
+<a name="animation" class="anchor" href="#animation"><span class="octicon octicon-link"></span></a>Animation</h1>
+
+<p>Το animation δεν είναι τίποτα παρά να βάλουμε ένα βρόγχο στον οποίον θα ζωγραφίζουμε τα οστά και το δέρμα και για κάθε frame θα ενημερώνουμε την καινούργια θέση του δέρματος σε σχέση με την κίνηση των οστών.</p>
+
+<h1>
+<a name="---2" class="anchor" href="#---2"><span class="octicon octicon-link"></span></a>Σχολία για το 2Δ</h1>
+
+<p>Όσο αφορά το δισδιάστατο κομμάτι η σκελετοποίηση είναι παραμετρική και γίνεται σωστά. Επίσης δίνεται η δυνατότητα να φορτωθεί απευθείας το bone system από αρχείο και το μοντέλο και να γίνει animation. Έχει γενικά δύο σημεία που χρειάζονται επιδιόρθωση. Το ένα είναι ότι αν κατά την σκελετοποίηση δεν εξαχθεί συμπαγές σκελετός (ενιαίος) τότε δεν θα μπορέσει να εξάγει την δομή δέντρου με αποτέλεσμα να κολλήσει. Αυτό δεν γίνεται στο 3Δ γιατί εξαρχής δημιουργήθηκαν οι κατάλληλες δομές για να βοηθήσουν στην εξομάλυνση του σκελετού και στην εύκολη εξαγωγή της δομής δέντρου. Το δεύτερο κομμάτι είναι ότι δεν υπολογίζονται κατάλληλα οι σχετικές γωνίες με αποτέλεσμα να αναποδογυρίζει τον σκελετό και να μην ταιριάζει στο μοντέλο. Αν αλλάξει ο τρόπος υπολογισμού των γωνιών δεν θα υπάρχει πρόβλημα. Παρόλα αυτά για να μπορεί να γίνει έλεγχος του animation και του skinning μπορεί να φορτωθεί έτοιμο μοντέλο με σκελετό.</p>
+
+<p>Μέσα στο doc υπάρχει ένα index αρχείο το οποίο ανοίγει τα java docs και μπορεί κάποιος να δει πως είναι δομημένο το project τις κλάσεις που έχει και το τι κάνουν με επεξήγηση για τις μεθόδους και τα πεδία τους.</p>
+
+<h1>
+<a name="---3" class="anchor" href="#---3"><span class="octicon octicon-link"></span></a>Σχολία για το 3Δ</h1>
+
+<p>Όσο αφορά το 3Δ στην κατασκευή του σκελετού δημιουργηθήκαν κατάλληλες δομές για να βοηθήσουν στην μεταεπεξεργασία του σκελετού. Η οργάνωση ήταν καλύτερη και η διαδικασία ήταν γνωστή. Δημιουργήθηκε χειριστής event για την camera με το ποντίκι. Όσο αφορά αυτό σε πολλά site αυτό που κάνα είναι να περιστρέφουν και να μετατοπίζουν το σύστημα συντεταγμένων της opengl με αποτέλεσμα αν ζωγραφίζεις με σχετικές συντεταγμένες να σου παραμορφώνει το μοντέλο. Αυτό διορθωτικέ με την χρήση της glu lookAt και την μετακίνηση της κάμερας και όχι του συστήματος συντεταγμένων με αποτέλεσμα να αφήνει το μοντέλο αναλλοίωτο. </p>
+
+<p>Επίσης επειδή δεν μπορούμε να ξέρουμε την φορά των κάθετων διανυσμάτων των επιφανειών του μοντέλου από το obj για αυτό υλοποιήθηκε μια συνάρτηση η οποία ελέγχει αν το διάνυσμα κοιτάει προς τα έξω η προς τα μέσα.</p>
+
+<p>Γενικά και εδώ υπάρχει ένα θεματάκι όσο αφορά το σκελετό. Αν το μοντέλο αποτελείται από πολλές επιφάνειες η επεξεργασία για το visible set είναι πολύ χρονοβόρα και για να βρεθεί ένα local minimum απαιτείται να προσπελαστούν πολλές φορές οι επιφανείς για να βρεθεί αν υπάρχει τομή μεταξύ ακτίνας και τριγώνου (για τις επιφανείς). Συγκεκριμένα έγινε δειγματοληψία σε 14 κατευθύνσεις για visible set κάθε μια από τις 14 απαιτεί την προσπέλαση όλων των επιφανειών του μοντέλου για να βρει αν υπάρχει τομή (είναι απαραίτητα να προσπελαστούν όλα) και αυτή η διαδικασία για ένα κόμβο επαναλαμβάνεται όσες φορές είναι τα iterations που έχουμε δώσει. Με άλλα λόγια η επιβάρυνση για τον υπολογισμό του visible set είναι:</p>
+
+<p>Ο(14*n*iterations*m)</p>
+
+<p>Όπου n είναι ο αριθμός των κόμβων και m είναι ο αριθμός των επιφανειών. Χωρίς να έχουμε προσθέσει την επιβάρυνση των άλλων διαδικασιών και υπολογισμών στον αλγόριθμο.</p>
+
+<p>Για τον λόγο αυτό και επειδή δεν μπόρεσα να σκεφτώ κάποια κατάλληλη δομή για να βελτιώνει τον χρόνο έγινε μια μάταιη προσπαθεί να βελτιώσω τον χρόνο εκτέλεσης με την χρήση των πυρήνων του υπολογιστή. Παρατήρησα ότι το να ψάξεις ένα local minimum είναι μια εργασία που δεν εξαρτάται από άλλες, άρα μπορεί να παραλληλιστεί. Χρησιμοποίησα το pool of threads pattern και δημιούργησα ένα executor στον οποίο έδωσα ένα αριθμό από threads και κάθε thread αναπαριστά την διαδικασία για τον εντοπισμό του local minimum. Για να γλυτώσουμε το overhead της δημιουργίας των threads αν ένα νήμα τελειώσει την διαδικασία τότε είναι διαθέσιμο και μπορεί να του αναθέτει καινούργιος κόμβος. Ο χρόνος εκτέλεσης θα βελτιωθεί σε περίπτωση που ο υπολογιστής έχει πολλούς πυρήνες.</p>
+
+<p>Γενικά όλα δουλεύουν στο 3Δ αλλά δεν μπόρεσα να ανοίξω μεγάλα μοντέλα λόγο της καθυστέρησης. Επίσης η κινήσεις δεν έγιναν με ομογενείς πίνακες αλλά με απλές περιστροφές και μετατοπίσεις.
+ </p>
+
+<h1>
+<a name="-5" class="anchor" href="#-5"><span class="octicon octicon-link"></span></a>Βιβλιογραφία</h1>
+
+<ol>
+<li>Fu-Che Wu, Wan-Chun Ma, Ping-Chou Liou, Rung-Huei Liang and Ming Ouhyoung Skeleton Extraction of 3D Objects with Visible Repulsive Force Eurographics Symposium on Geometry Processing 2003</li>
+<li>Skinning <a href="http://graphics.ucsd.edu/courses/cse169_w05/3-Skin.htm">http://graphics.ucsd.edu/courses/cse169_w05/3-Skin.htm</a>
+</li>
+<li>Ray-Triangle intersection <a href="http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-9-ray-triangle-">http://www.scratchapixel.com/lessons/3d-basic-lessons/lesson-9-ray-triangle-</a>
+</li>
+<li>intersection/ray-triangle-intersection-geometric-solution/</li>
+<li>Minimum spanning tree <a href="http://algs4.cs.princeton.edu/43mst/">http://algs4.cs.princeton.edu/43mst/</a>
+</li>
+<li>Ilya Baran, Jovan Popovi Automatic Rigging and Animation of 3D Characters Computer Science and Artificial Intelligence Laboratory Massachusetts Institute of Technology</li>
+<li>Mian Pan and Gisela Klette A revision of a 3D Skeletonization algorithm Department of Computer Science University of Auckland Centre of Image Technology and Robotics (CITR) Tamaki Campus, Morrin Road, Building 731, Glen Innes,Auckland New Zealand</li>
+<li>Nicu D. Cornea, Deborah Silver, Xiaosong Yuan, Raman BalasubramanianComputing hierarchical curve-skeletons of 3D objects Published online: 14 September 2005</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Skeletonextraction3D maintained by <a href="https://github.com/mitkof6">mitkof6</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("skeleton extraction 3D");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
