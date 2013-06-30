@@ -5,6 +5,8 @@ Skeleton extruction 3D using Visible Repulsive Force and animation
 
 Author: Jim Stanev
 
+ http://mitkof6.github.io/SkeletonExtraction3D
+
 Description
 ===========
 
@@ -30,10 +32,7 @@ Dependencies
 
 Java library dependencies:
 
-** JOGL opengl for Java
-
-** JAMA matrix operation
-
-** Java3D
-
-** JavaGeom
+* JOGL opengl for Java
+* JAMA matrix operation
+* Java3D
+* JavaGeom
